@@ -58,6 +58,10 @@ export default function SignupPage() {
                     first_name: firstName,
                     last_name: lastName,
                     role: role,
+                    phone: phone,
+                    location_id: locationId ? parseInt(locationId) : null,
+                    provider_type: role === 'prestador' ? providerType : null,
+                    business_name: role === 'prestador' && providerType === 'business' ? businessName : null,
                 }
             }
         });

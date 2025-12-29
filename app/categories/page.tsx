@@ -87,10 +87,6 @@ const CATEGORIES = [
 ];
 
 export default async function CategoriesPage() {
-    // The supabase call is no longer needed as categories are hardcoded
-    // const supabase = await createClient();
-    // const { data: categories } = await supabase.from('categories').select('*').order('name');
-
     return (
         <div className="bg-[#f8fafc] min-h-screen py-16">
             <div className="max-w-[1240px] mx-auto px-6">

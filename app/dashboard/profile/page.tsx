@@ -195,6 +195,23 @@ export default function ProfilePage() {
         // Add business fields if provider
         if (profile?.role === 'prestador') {
             if (providerType === 'business') {
+                // Validation for mandatory business fields
+                if (!legalName.trim()) {
+                    setError('La Razón Social es obligatoria');
+                    setSaving(false);
+                    return;
+                }
+                if (!cuit.trim()) {
+                    setError('El CUIT es obligatorio');
+                    setSaving(false);
+                    return;
+                }
+                if (!fiscalAddress.trim()) {
+                    setError('La Dirección Fiscal es obligatoria');
+                    setSaving(false);
+                    return;
+                }
+
                 updateData.business_name = businessName;
                 updateData.legal_name = legalName;
                 updateData.website = website;

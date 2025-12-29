@@ -1,40 +1,95 @@
+```typescript
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import {
-    Wrench, Zap, Droplets, PaintBucket, Hammer, Flame, Monitor,
-    Tv, ShieldCheck, Shovel, Scissors, Layout, Palette, Megaphone, Share2,
-    Settings, ChevronRight, ArrowRight, Box, Car, Bike, Key, Truck, Dog
+    Wrench, PaintBucket, Droplets, Hammer, Zap, Monitor, Lightbulb, ShieldCheck,
+    Clock, ChevronRight, Star, ArrowRight, CheckCircle2, ChevronLeft, Search, Filter, HardHat, CarFront, Truck, Bike, Layout
 } from 'lucide-react';
 
-const ICON_MAP: Record<string, any> = {
-    'aire-acondicionado': Wrench,
-    'instalacion-tv': Tv,
-    'electricidad': Zap,
-    'plomeria': Droplets,
-    'albanileria': Hammer,
-    'gas': Flame,
-    'carpinteria': Hammer,
-    'herreria': ShieldCheck,
-    'pintura': PaintBucket,
-    'limpieza': Shovel,
-    'jardineria': Scissors,
-    'informatica': Monitor,
-    'diseno-grafico': Palette,
-    'marketing': Megaphone,
-    'redes-sociales': Share2,
-    'soporte-tecnico': Settings,
-    'impresiones-3d': Box,
-    'mecanica-autos': Car,
-    'mecanica-motos': Bike,
-    'cerrajeria': Key,
-    'fletes-mudanzas': Truck,
-    'reparacion-electrodomesticos': Tv,
-    'mascotas': Dog,
-};
+const CATEGORIES = [
+    {
+        name: 'Aire Acondicionado',
+        icon: Wrench,
+        slug: 'aire-acondicionado',
+        color: 'bg-blue-50 text-blue-600',
+        description: 'Instalación, mantenimiento y reparación de equipos split y centrales.'
+    },
+    {
+        name: 'Electricidad',
+        icon: Zap,
+        slug: 'electricidad',
+        color: 'bg-amber-50 text-amber-600',
+        description: 'Instalaciones eléctricas, reparaciones, iluminación y tableros.'
+    },
+    {
+        name: 'Plomería',
+        icon: Droplets,
+        slug: 'plomeria',
+        color: 'bg-cyan-50 text-cyan-600',
+        description: 'Reparación de filtraciones, destapaciones e instalaciones sanitarias.'
+    },
+    {
+        name: 'Pintura',
+        icon: PaintBucket,
+        slug: 'pintura',
+        color: 'bg-rose-50 text-rose-600',
+        description: 'Pintura de interiores, exteriores, impermeabilización y tratamientos.'
+    },
+    {
+        name: 'Limpieza',
+        icon: CheckCircle2,
+        slug: 'limpieza',
+        color: 'bg-emerald-50 text-emerald-600',
+        description: 'Limpieza profunda de hogares, oficinas y finales de obra.'
+    },
+    {
+        name: 'Albañilería',
+        icon: Hammer,
+        slug: 'albanileria',
+        color: 'bg-slate-50 text-slate-600',
+        description: 'Construcción, refacciones, colocación de pisos y revestimientos.'
+    },
+    {
+        name: 'Gas',
+        icon: Lightbulb,
+        slug: 'gas',
+        color: 'bg-orange-50 text-orange-600',
+        description: 'Instalaciones de gas, reparación de estufas, cocinas y termotanques.'
+    },
+    {
+        name: 'Soporte Técnico',
+        icon: Monitor,
+        slug: 'soporte-tecnico',
+        color: 'bg-indigo-50 text-indigo-600',
+        description: 'Reparación de PC, notebooks, redes y configuración de software.'
+    },
+    {
+        name: 'Cadetería',
+        icon: HardHat,
+        slug: 'cadeteria',
+        color: 'bg-red-50 text-red-600',
+        description: 'Envíos rápidos, trámites y mensajería en moto.'
+    },
+    {
+        name: 'Remis',
+        icon: CarFront,
+        slug: 'remis',
+        color: 'bg-zinc-50 text-zinc-600',
+        description: 'Traslados de pasajeros cómodos y seguros puerta a puerta.'
+    },
+    {
+        name: 'Fletes y Mudanzas',
+        icon: Truck,
+        slug: 'fletes',
+        color: 'bg-yellow-50 text-yellow-600',
+        description: 'Transporte de cargas, mudanzas locales y larga distancia.'
+    },
+];
 
 export default async function CategoriesPage() {
-    const supabase = await createClient();
-    const { data: categories } = await supabase.from('categories').select('*').order('name');
+    // The supabase call is no longer needed as categories are hardcoded
+    // const supabase = await createClient();
+    // const { data: categories } = await supabase.from('categories').select('*').order('name');
 
     return (
         <div className="bg-[#f8fafc] min-h-screen py-16">
@@ -50,12 +105,11 @@ export default async function CategoriesPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {categories?.map((cat) => {
                         const IconComponent = ICON_MAP[cat.slug] || Layout;
                         return (
                             <Link
                                 key={cat.id}
-                                href={`/search?category=${cat.slug}`}
+                                href={`/ search ? category = ${ cat.slug } `}
                                 className="group at-card p-8 border-none bg-white hover:ring-4 hover:ring-indigo-50 transition-all duration-500 block relative overflow-hidden"
                             >
                                 {/* Decorative background element */}

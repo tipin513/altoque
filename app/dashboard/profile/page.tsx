@@ -21,6 +21,15 @@ export default function ProfilePage() {
     const [address, setAddress] = useState('');
     const [servicePreferences, setServicePreferences] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [hasChanges, setHasChanges] = useState(false);
+
+    // Store original values to detect changes
+    const [originalValues, setOriginalValues] = useState({
+        phone: '',
+        locationId: '',
+        address: '',
+        servicePreferences: ''
+    });
 
     useEffect(() => {
         async function loadProfile() {
@@ -38,10 +47,23 @@ export default function ProfilePage() {
 
             if (profileData) {
                 setProfile(profileData);
-                setPhone(profileData.phone || '');
-                setLocationId(profileData.location_id?.toString() || '');
-                setAddress(profileData.address || '');
-                setServicePreferences(profileData.service_preferences || '');
+                const phoneVal = profileData.phone || '';
+                const locationVal = profileData.location_id?.toString() || '';
+                const addressVal = profileData.address || '';
+                const preferencesVal = profileData.service_preferences || '';
+
+                setPhone(phoneVal);
+                setLocationId(locationVal);
+                setAddress(addressVal);
+                setServicePreferences(preferencesVal);
+
+                // Store original values
+                setOriginalValues({
+                    phone: phoneVal,
+                    locationId: locationVal,
+                    address: addressVal,
+                    servicePreferences: preferencesVal
+                });
             }
 
             const { data: locationsData } = await supabase
@@ -56,6 +78,17 @@ export default function ProfilePage() {
 
         loadProfile();
     }, []);
+
+    // Detect changes
+    useEffect(() => {
+        const changed =
+            phone !== originalValues.phone ||
+            locationId !== originalValues.locationId ||
+            address !== originalValues.address ||
+            servicePreferences !== originalValues.servicePreferences;
+
+        setHasChanges(changed);
+    }, [phone, locationId, address, servicePreferences, originalValues]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -95,6 +128,14 @@ export default function ProfilePage() {
             setError(updateError.message || 'Error al guardar los cambios');
         } else {
             setSuccess(true);
+            // Update original values after successful save
+            setOriginalValues({
+                phone,
+                locationId,
+                address,
+                servicePreferences
+            });
+            setHasChanges(false);
             setTimeout(() => setSuccess(false), 3000);
         }
 
@@ -238,16 +279,18 @@ export default function ProfilePage() {
                         <div className="flex gap-4">
                             <button
                                 type="submit"
-                                disabled={saving}
-                                className="btn-primary h-14 px-8 rounded-2xl text-lg flex items-center justify-center gap-2 flex-1"
+                                disabled={saving || !hasChanges}
+                                className="btn-primary h-14 px-8 rounded-2xl text-lg flex items-center justify-center gap-2 flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {saving ? (
                                     <>
                                         <Loader2 size={24} className="animate-spin" />
                                         Guardando...
                                     </>
-                                ) : (
+                                ) : hasChanges ? (
                                     'Guardar Cambios'
+                                ) : (
+                                    '✓ Guardado'
                                 )}
                             </button>
                             <Link

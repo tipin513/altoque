@@ -57,7 +57,10 @@ export default function ProfilePage() {
         legalDocsUrl: '',
         certificatesUrl: '',
         bio: '',
-        workMode: 'solo'
+        certificatesUrl: '',
+        bio: '',
+        workMode: 'solo',
+        providerType: 'independent' as 'independent' | 'business'
     });
 
     useEffect(() => {
@@ -133,7 +136,9 @@ export default function ProfilePage() {
                     legalDocsUrl: legalDocsVal,
                     certificatesUrl: certificatesVal,
                     bio: bioVal,
-                    workMode: workModeVal
+                    bio: bioVal,
+                    workMode: workModeVal,
+                    providerType: providerTypeVal as 'independent' | 'business'
                 });
             }
 
@@ -167,10 +172,11 @@ export default function ProfilePage() {
             legalDocsUrl !== originalValues.legalDocsUrl ||
             certificatesUrl !== originalValues.certificatesUrl ||
             bio !== originalValues.bio ||
-            workMode !== originalValues.workMode;
+            workMode !== originalValues.workMode ||
+            providerType !== originalValues.providerType;
 
         setHasChanges(changed);
-    }, [phone, locationId, address, servicePreferences, businessName, legalName, website, businessHours, yearsInBusiness, bio, workMode, cuit, fiscalAddress, legalDocsUrl, certificatesUrl, originalValues]);
+    }, [phone, locationId, address, servicePreferences, businessName, legalName, website, businessHours, yearsInBusiness, bio, workMode, cuit, fiscalAddress, legalDocsUrl, certificatesUrl, providerType, originalValues]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -258,7 +264,8 @@ export default function ProfilePage() {
                 legalDocsUrl,
                 certificatesUrl,
                 bio,
-                workMode
+                workMode,
+                providerType
             });
             setHasChanges(false);
             setTimeout(() => setSuccess(false), 3000);
@@ -329,6 +336,30 @@ export default function ProfilePage() {
                                     </span>
                                     {providerType === 'independent' ? 'Perfil Profesional' : 'Información del Negocio'}
                                 </h3>
+
+                                {/* Provider Type Selector */}
+                                <div className="bg-white p-2 rounded-2xl border border-indigo-100 flex gap-2 mb-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => setProviderType('independent')}
+                                        className={`flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${providerType === 'independent'
+                                                ? 'bg-indigo-600 text-white shadow-md'
+                                                : 'text-slate-500 hover:bg-slate-50'
+                                            }`}
+                                    >
+                                        🛠️ Independiente
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setProviderType('business')}
+                                        className={`flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${providerType === 'business'
+                                                ? 'bg-indigo-600 text-white shadow-md'
+                                                : 'text-slate-500 hover:bg-slate-50'
+                                            }`}
+                                    >
+                                        🏢 Empresa
+                                    </button>
+                                </div>
 
                                 {providerType === 'independent' ? (
                                     <>

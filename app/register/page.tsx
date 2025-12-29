@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, Mail } from 'lucide-react';
@@ -20,10 +20,10 @@ export default function RegisterPage() {
     const supabase = createClient();
 
     // Pre-select role if passed in URL
-    useState(() => {
+    useEffect(() => {
         const r = searchParams.get('role');
         if (r === 'prestador' || r === 'cliente') setRole(r as any);
-    });
+    }, [searchParams]);
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();

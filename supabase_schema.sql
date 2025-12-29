@@ -6,7 +6,12 @@ CREATE TABLE profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
   role TEXT CHECK (role IN ('cliente', 'prestador')) NOT NULL,
   full_name TEXT NOT NULL,
+  first_name TEXT,
+  last_name TEXT,
   phone TEXT,
+  location_id BIGINT REFERENCES locations(id),
+  address TEXT,
+  service_preferences TEXT,
   avatar_url TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );

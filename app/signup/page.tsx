@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2, Mail } from 'lucide-react';
@@ -9,19 +9,38 @@ import { CheckCircle2, Mail } from 'lucide-react';
 export default function SignupPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [fullName, setFullName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [locationId, setLocationId] = useState('');
     const [role, setRole] = useState<'cliente' | 'prestador'>('cliente');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [registered, setRegistered] = useState(false);
+    const [locations, setLocations] = useState<any[]>([]);
 
     const router = useRouter();
     const supabase = createClient();
+
+    // Fetch locations
+    useEffect(() => {
+        async function fetchLocations() {
+            const { data } = await supabase
+                .from('locations')
+                .select('*')
+                .order('province', { ascending: true })
+                .order('city', { ascending: true });
+            if (data) setLocations(data);
+        }
+        fetchLocations();
+    }, []);
+
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+
+        const fullName = `${firstName} ${lastName}`.trim();
 
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
@@ -29,6 +48,8 @@ export default function SignupPage() {
             options: {
                 data: {
                     full_name: fullName,
+                    first_name: firstName,
+                    last_name: lastName,
                     role: role,
                 }
             }
@@ -40,8 +61,16 @@ export default function SignupPage() {
             return;
         }
 
+        // Update profile with location if provided
+        if (authData.user && locationId) {
+            await supabase
+                .from('profiles')
+                .update({ location_id: parseInt(locationId) })
+                .eq('id', authData.user.id);
+        }
+
         if (authData.session) {
-            router.push('/dashboard');
+            router.push('/dashboard/profile');
             router.refresh();
         } else {
             setRegistered(true);
@@ -107,15 +136,27 @@ export default function SignupPage() {
                         </button>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
-                        <input
-                            type="text"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
-                            required
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                            <input
+                                type="text"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                            <input
+                                type="text"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
+                                required
+                            />
+                        </div>
                     </div>
 
                     <div>
@@ -139,6 +180,25 @@ export default function SignupPage() {
                             required
                             minLength={6}
                         />
+                        <p className="text-xs text-gray-500 mt-1">Mínimo 6 caracteres</p>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Zona / Localidad</label>
+                        <select
+                            value={locationId}
+                            onChange={(e) => setLocationId(e.target.value)}
+                            className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors bg-white"
+                            required
+                        >
+                            <option value="">Seleccioná tu zona</option>
+                            {locations.map((loc) => (
+                                <option key={loc.id} value={loc.id}>
+                                    {loc.city}, {loc.province}
+                                </option>
+                            ))}
+                        </select>
+                        <p className="text-xs text-gray-500 mt-1">Esto nos ayuda a mostrarte servicios cercanos</p>
                     </div>
 
                     {error && <p className="text-red-500 text-sm text-center">{error}</p>}

@@ -118,16 +118,28 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Categories Grid - Card Style */}
-      <section className="bg-slate-50 py-24">
-        <div className="max-w-[1240px] mx-auto px-6">
-          <div className="flex items-end justify-between mb-12">
+      {/* Categories Grid - Living Cards Redesign */}
+      <section className="bg-slate-50 py-24 relative overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-40 -translate-x-1/2 -translate-y-1/2"></div>
+
+        <div className="max-w-[1240px] mx-auto px-6 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div>
-              <h2 className="text-3xl font-bold text-slate-900">¿Qué necesitás hoy?</h2>
-              <p className="text-slate-500 mt-2">Explorá nuestras categorías más buscadas por los usuarios.</p>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100/50 text-indigo-700 text-[10px] font-black uppercase tracking-widest mb-3 border border-indigo-100">
+                <Star size={12} fill="currentColor" />
+                Explorá por rubros
+              </div>
+              <h2 className="text-4xl font-black text-slate-900 tracking-tight">¿Qué necesitás hoy?</h2>
+              <p className="text-slate-500 mt-3 text-lg max-w-lg">Encontrá al profesional ideal para cada rincón de tu hogar o empresa.</p>
             </div>
-            <Link href="/categories" className="group flex items-center gap-2 text-indigo-600 font-bold hover:gap-3 transition-all">
-              Ver todas <ChevronRight size={20} />
+
+            <Link
+              href="/categories"
+              className="group flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold hover:bg-indigo-600 transition-all shadow-xl shadow-slate-200 hover:shadow-indigo-200 active:scale-95"
+            >
+              Ver todas las categorías
+              <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
@@ -136,12 +148,25 @@ export default async function Home() {
               <Link
                 key={cat.slug}
                 href={`/search?category=${cat.slug}`}
-                className="at-card p-8 flex flex-col items-center justify-center gap-4 text-center group"
+                className="relative bg-white p-8 rounded-[32px] flex flex-col items-center justify-center gap-5 text-center group transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10 border border-slate-100 hover:border-indigo-100 overflow-hidden"
               >
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${cat.color} group-hover:scale-110 transition-transform shadow-sm`}>
-                  <cat.icon size={32} />
+                {/* Hover Gradient Background */}
+                <div className={`absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-500 ${cat.color.split(' ')[0].replace('bg-', 'bg-')}`}></div>
+
+                <div className={`w-20 h-20 rounded-[24px] flex items-center justify-center ${cat.color} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-sm relative z-10`}>
+                  <cat.icon size={36} className="transition-transform duration-300 group-hover:scale-105" />
                 </div>
-                <span className="font-bold text-slate-800 tracking-tight">{cat.name}</span>
+
+                <div className="space-y-1 relative z-10">
+                  <span className="block font-black text-slate-800 text-lg tracking-tight group-hover:text-indigo-900 transition-colors">
+                    {cat.name}
+                  </span>
+                  <div className="h-0.5 w-0 bg-indigo-500 mx-auto rounded-full group-hover:w-8 transition-all duration-300 delay-75"></div>
+                </div>
+
+                <div className="absolute top-4 right-4 text-slate-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 transition-all duration-300">
+                  <ArrowRight size={20} />
+                </div>
               </Link>
             ))}
           </div>

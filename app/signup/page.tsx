@@ -75,7 +75,11 @@ export default function SignupPage() {
 
             // Add business fields for providers
             if (role === 'prestador') {
-                updateData.business_name = businessName;
+                updateData.provider_type = providerType;
+
+                if (providerType === 'business') {
+                    updateData.business_name = businessName;
+                }
                 updateData.phone = phone;
             }
 
@@ -154,19 +158,68 @@ export default function SignupPage() {
 
                     {/* Conditional fields based on role */}
                     {role === 'prestador' ? (
-                        <>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Comercial</label>
-                                <input
-                                    type="text"
-                                    value={businessName}
-                                    onChange={(e) => setBusinessName(e.target.value)}
-                                    placeholder="Ej: Plomería López"
-                                    className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
-                                    required
-                                />
-                                <p className="text-xs text-gray-500 mt-1">El nombre de tu empresa o negocio</p>
+                        <div className="space-y-4">
+                            {/* Provider Type Selector */}
+                            <div className="grid grid-cols-2 gap-3 mb-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setProviderType('independent')}
+                                    className={`py-2 px-3 text-sm border rounded-lg transition-all ${providerType === 'independent'
+                                            ? 'bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500'
+                                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    Profesional Independiente
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setProviderType('business')}
+                                    className={`py-2 px-3 text-sm border rounded-lg transition-all ${providerType === 'business'
+                                            ? 'bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500'
+                                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    Empresa / PyME
+                                </button>
                             </div>
+
+                            {providerType === 'business' ? (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Comercial</label>
+                                    <input
+                                        type="text"
+                                        value={businessName}
+                                        onChange={(e) => setBusinessName(e.target.value)}
+                                        placeholder="Ej: Plomería López"
+                                        className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
+                                        required
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">El nombre de tu empresa o negocio</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                        <input
+                                            type="text"
+                                            value={firstName}
+                                            onChange={(e) => setFirstName(e.target.value)}
+                                            className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                                        <input
+                                            type="text"
+                                            value={lastName}
+                                            onChange={(e) => setLastName(e.target.value)}
+                                            className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                            )}
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
@@ -180,7 +233,7 @@ export default function SignupPage() {
                                 />
                                 <p className="text-xs text-gray-500 mt-1">Para que los clientes puedan contactarte</p>
                             </div>
-                        </>
+                        </div>
                     ) : (
                         <div className="grid grid-cols-2 gap-4">
                             <div>

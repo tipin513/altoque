@@ -11,18 +11,19 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-async function listCategories() {
-    const { data, error } = await supabase
+async function deleteCategory(id) {
+    console.log(`Deleting category with ID: ${id}`);
+    const { error } = await supabase
         .from('categories')
-        .select('id, slug, name, icon')
-        .ilike('name', '%fletes%');
+        .delete()
+        .eq('id', id);
 
     if (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error deleting category:', error);
         return;
     }
 
-    console.log(JSON.stringify(data, null, 2));
+    console.log('Category deleted successfully.');
 }
 
-listCategories();
+deleteCategory(13); // ID 13 is the one with NULL icon and slug 'fletes-mudanzas'

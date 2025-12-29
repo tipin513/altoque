@@ -57,8 +57,6 @@ export default function ProfilePage() {
         legalDocsUrl: '',
         certificatesUrl: '',
         bio: '',
-        certificatesUrl: '',
-        bio: '',
         workMode: 'solo',
         providerType: 'independent' as 'independent' | 'business'
     });
@@ -136,7 +134,6 @@ export default function ProfilePage() {
                     legalDocsUrl: legalDocsVal,
                     certificatesUrl: certificatesVal,
                     bio: bioVal,
-                    bio: bioVal,
                     workMode: workModeVal,
                     providerType: providerTypeVal as 'independent' | 'business'
                 });
@@ -200,6 +197,8 @@ export default function ProfilePage() {
 
         // Add business fields if provider
         if (profile?.role === 'prestador') {
+            updateData.provider_type = providerType;
+
             if (providerType === 'business') {
                 // Validation for mandatory business fields
                 if (!legalName.trim()) {
@@ -343,8 +342,8 @@ export default function ProfilePage() {
                                         type="button"
                                         onClick={() => setProviderType('independent')}
                                         className={`flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${providerType === 'independent'
-                                                ? 'bg-indigo-600 text-white shadow-md'
-                                                : 'text-slate-500 hover:bg-slate-50'
+                                            ? 'bg-indigo-600 text-white shadow-md'
+                                            : 'text-slate-500 hover:bg-slate-50'
                                             }`}
                                     >
                                         🛠️ Independiente
@@ -353,8 +352,8 @@ export default function ProfilePage() {
                                         type="button"
                                         onClick={() => setProviderType('business')}
                                         className={`flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${providerType === 'business'
-                                                ? 'bg-indigo-600 text-white shadow-md'
-                                                : 'text-slate-500 hover:bg-slate-50'
+                                            ? 'bg-indigo-600 text-white shadow-md'
+                                            : 'text-slate-500 hover:bg-slate-50'
                                             }`}
                                     >
                                         🏢 Empresa

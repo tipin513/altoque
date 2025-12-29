@@ -84,7 +84,7 @@ export default async function Header() {
                             <Link href="/login" className="text-sm font-bold text-slate-600 hover:text-indigo-600 px-4 py-2 hover:bg-slate-50 rounded-xl transition-colors">
                                 Ingresar
                             </Link>
-                            <Link href="/register" className="btn-primary py-2.5 px-6 text-sm rounded-xl shadow-indigo-100">
+                            <Link href="/signup" className="btn-primary py-2.5 px-6 text-sm rounded-xl shadow-indigo-100">
                                 Registrarse
                             </Link>
                         </div>

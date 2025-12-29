@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { X, Star, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { X, Star, Loader2, AlertCircle, CheckCircle, Camera, Trash2 } from 'lucide-react';
 
 interface ReviewModalProps {
     hireId: string;
@@ -18,11 +18,62 @@ export default function ReviewModal({ hireId, serviceId, serviceTitle, isOpen, o
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);
     const [comment, setComment] = useState('');
+    const [files, setFiles] = useState<File[]>([]);
+    const [previewUrls, setPreviewUrls] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
     if (!isOpen) return null;
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const newFiles = Array.from(e.target.files);
+            // Limit to 3 photos max
+            if (files.length + newFiles.length > 3) {
+                setError('Máximo 3 fotos por reseña');
+                return;
+            }
+
+            setFiles(prev => [...prev, ...newFiles]);
+
+            // Create previews
+            const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+            setPreviewUrls(prev => [...prev, ...newPreviews]);
+        }
+    };
+
+    const removeFile = (index: number) => {
+        setFiles(prev => prev.filter((_, i) => i !== index));
+        setPreviewUrls(prev => {
+            // Revoke object URL to avoid memory leaks
+            URL.revokeObjectURL(prev[index]);
+            return prev.filter((_, i) => i !== index);
+        });
+    };
+
+    const uploadPhotos = async () => {
+        const uploadedUrls: string[] = [];
+
+        for (const file of files) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+            const filePath = `${serviceId}/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('review-images')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('review-images')
+                .getPublicUrl(filePath);
+
+            uploadedUrls.push(publicUrl);
+        }
+        return uploadedUrls;
+    };
 
     const handleSubmit = async () => {
         if (rating === 0) {
@@ -37,6 +88,13 @@ export default function ReviewModal({ hireId, serviceId, serviceTitle, isOpen, o
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('Debes iniciar sesión para calificar');
 
+            // 1. Upload photos first
+            let photos: string[] = [];
+            if (files.length > 0) {
+                photos = await uploadPhotos();
+            }
+
+            // 2. Insert review with photos
             const { error: reviewError } = await supabase
                 .from('reviews')
                 .insert({
@@ -44,7 +102,8 @@ export default function ReviewModal({ hireId, serviceId, serviceTitle, isOpen, o
                     service_id: serviceId,
                     client_id: user.id,
                     rating,
-                    comment
+                    comment,
+                    photos // Array of URLs
                 });
 
             if (reviewError) {
@@ -62,8 +121,7 @@ export default function ReviewModal({ hireId, serviceId, serviceTitle, isOpen, o
 
         } catch (err: any) {
             console.error('Error submitting review:', err);
-            // Better error extraction for Supabase/Postgrest errors
-            const errorMessage = err.message || err.details || (typeof err === 'object' ? JSON.stringify(err) : 'Error al enviar la calificación');
+            const errorMessage = err.message || 'Error al enviar la calificación';
             setError(errorMessage);
         } finally {
             setLoading(false);
@@ -72,7 +130,7 @@ export default function ReviewModal({ hireId, serviceId, serviceTitle, isOpen, o
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-            <div className="bg-white rounded-[32px] w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="bg-white rounded-[32px] w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 transform transition-all max-h-[90vh] overflow-y-auto">
                 <div className="p-8">
                     <div className="flex justify-between items-start mb-6">
                         <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500">
@@ -106,14 +164,48 @@ export default function ReviewModal({ hireId, serviceId, serviceTitle, isOpen, o
                                 ))}
                             </div>
 
-                            <div className="mb-8">
+                            <div className="mb-6">
                                 <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">Tu comentario (opcional)</label>
                                 <textarea
-                                    className="w-full h-32 px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100 focus:border-indigo-500 focus:bg-white focus:shadow-md outline-none transition-all resize-none text-slate-700"
+                                    className="w-full h-24 px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100 focus:border-indigo-500 focus:bg-white focus:shadow-md outline-none transition-all resize-none text-slate-700"
                                     placeholder="Contanos qué te pareció el servicio..."
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                 />
+                            </div>
+
+                            {/* Photo Upload Section */}
+                            <div className="mb-8">
+                                <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">Fotos (opcional)</label>
+                                <div className="flex gap-4 items-start">
+                                    <label className="w-20 h-20 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center text-slate-400 cursor-pointer hover:bg-slate-100 hover:border-indigo-500 hover:text-indigo-600 transition-all">
+                                        <Camera size={24} />
+                                        <span className="text-[10px] font-bold mt-1">Subir</span>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            className="hidden"
+                                            onChange={handleFileSelect}
+                                            disabled={loading || files.length >= 3}
+                                        />
+                                    </label>
+
+                                    <div className="flex gap-3 overflow-x-auto">
+                                        {previewUrls.map((url, index) => (
+                                            <div key={index} className="relative w-20 h-20 flex-shrink-0 group">
+                                                <img src={url} className="w-full h-full object-cover rounded-2xl border border-slate-200" />
+                                                <button
+                                                    onClick={() => removeFile(index)}
+                                                    className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md text-slate-400 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <p className="text-xs text-slate-400 mt-2">Máximo 3 fotos. Formatos: JPG, PNG.</p>
                             </div>
 
                             {error && (
@@ -129,7 +221,12 @@ export default function ReviewModal({ hireId, serviceId, serviceTitle, isOpen, o
                                     disabled={loading}
                                     className="btn-primary h-14 w-full rounded-2xl flex items-center justify-center gap-2 text-lg"
                                 >
-                                    {loading ? <Loader2 size={24} className="animate-spin" /> : 'Enviar Calificación'}
+                                    {loading ? (
+                                        <>
+                                            <Loader2 size={24} className="animate-spin" />
+                                            <span>Subiendo...</span>
+                                        </>
+                                    ) : 'Enviar Calificación'}
                                 </button>
                                 <button
                                     onClick={onClose}

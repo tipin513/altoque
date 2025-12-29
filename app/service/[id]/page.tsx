@@ -275,6 +275,23 @@ export default function ServiceDetailPage({ params }: { params: any }) {
                                                         </div>
                                                     </div>
                                                     <p className="text-slate-600 leading-relaxed font-light">{review.comment}</p>
+
+                                                    {/* Review Photos */}
+                                                    {review.photos && review.photos.length > 0 && (
+                                                        <div className="flex gap-2 mt-3">
+                                                            {review.photos.map((photo: string, idx: number) => (
+                                                                <div key={idx} className="w-20 h-20 rounded-xl overflow-hidden border border-slate-200 cursor-pointer hover:opacity-90 transition-opacity">
+                                                                    <img
+                                                                        src={photo}
+                                                                        alt={`Foto reseña ${idx + 1}`}
+                                                                        className="w-full h-full object-cover"
+                                                                        onClick={() => window.open(photo, '_blank')}
+                                                                    />
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+
                                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pt-2">
                                                         {format(new Date(review.created_at), "d 'de' MMMM, yyyy", { locale: es })}
                                                     </p>

@@ -13,6 +13,14 @@ CREATE TABLE profiles (
   address TEXT,
   service_preferences TEXT,
   avatar_url TEXT,
+  -- Business/Provider fields
+  business_name TEXT,
+  legal_name TEXT,
+  logo_url TEXT,
+  website TEXT,
+  social_media TEXT,
+  business_hours TEXT,
+  years_in_business INTEGER,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

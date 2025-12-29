@@ -13,6 +13,9 @@ export default function SignupPage() {
     const [lastName, setLastName] = useState('');
     const [locationId, setLocationId] = useState('');
     const [role, setRole] = useState<'cliente' | 'prestador'>('cliente');
+    // Business fields (for providers)
+    const [businessName, setBusinessName] = useState('');
+    const [phone, setPhone] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [registered, setRegistered] = useState(false);
@@ -35,12 +38,15 @@ export default function SignupPage() {
     }, []);
 
 
+
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
-        const fullName = `${firstName} ${lastName}`.trim();
+        const fullName = role === 'prestador' && businessName
+            ? businessName
+            : `${firstName} ${lastName}`.trim();
 
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
@@ -61,11 +67,21 @@ export default function SignupPage() {
             return;
         }
 
-        // Update profile with location if provided
-        if (authData.user && locationId) {
+        // Update profile with additional fields
+        if (authData.user) {
+            const updateData: any = {
+                location_id: locationId ? parseInt(locationId) : null
+            };
+
+            // Add business fields for providers
+            if (role === 'prestador') {
+                updateData.business_name = businessName;
+                updateData.phone = phone;
+            }
+
             await supabase
                 .from('profiles')
-                .update({ location_id: parseInt(locationId) })
+                .update(updateData)
                 .eq('id', authData.user.id);
         }
 
@@ -136,28 +152,59 @@ export default function SignupPage() {
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                            <input
-                                type="text"
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                                className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
-                                required
-                            />
+                    {/* Conditional fields based on role */}
+                    {role === 'prestador' ? (
+                        <>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Comercial</label>
+                                <input
+                                    type="text"
+                                    value={businessName}
+                                    onChange={(e) => setBusinessName(e.target.value)}
+                                    placeholder="Ej: Plomería López"
+                                    className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
+                                    required
+                                />
+                                <p className="text-xs text-gray-500 mt-1">El nombre de tu empresa o negocio</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                                <input
+                                    type="tel"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    placeholder="Ej: +54 9 11 1234-5678"
+                                    className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
+                                    required
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Para que los clientes puedan contactarte</p>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                <input
+                                    type="text"
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                                <input
+                                    type="text"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
+                                    required
+                                />
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
-                            <input
-                                type="text"
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                                className="w-full h-11 px-4 border border-gray-300 rounded-md outline-hidden focus:border-blue-500 transition-colors"
-                                required
-                            />
-                        </div>
-                    </div>
+                    )}
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>

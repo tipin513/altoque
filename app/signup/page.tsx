@@ -84,10 +84,16 @@ export default function SignupPage() {
                 updateData.phone = phone;
             }
 
-            await supabase
+            const { error: profileError } = await supabase
                 .from('profiles')
                 .update(updateData)
                 .eq('id', authData.user.id);
+
+            if (profileError) {
+                console.error('Error updating profile:', profileError);
+                // We don't block registration success but we log it. 
+                // Alternatively, we could show error. For now logging is better than silence.
+            }
         }
 
         if (authData.session) {

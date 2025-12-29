@@ -54,6 +54,9 @@ export default function NewServicePage() {
             }
 
             // 2. Fetch Categories & Locations
+            const { data: catData } = await supabase.from('categories').select('*').order('name');
+            const { data: locData } = await supabase.from('locations').select('*').order('province');
+
             if (catData) setCategories(catData);
             if (locData) setLocations(locData);
         }

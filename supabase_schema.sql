@@ -143,6 +143,7 @@ INSERT INTO categories (name, slug) VALUES
 ('Redes sociales', 'redes-sociales'),
 ('Soporte técnico', 'soporte-tecnico'),
 ('Impresiones 3D', 'impresiones-3d'),
+('Render/Diseño 3D', 'render-diseno-3d'),
 ('Mecánica de Autos', 'mecanica-autos'),
 ('Mecánica de Motos', 'mecanica-motos'),
 ('Cerrajería', 'cerrajeria'),

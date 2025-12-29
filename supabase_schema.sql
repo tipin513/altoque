@@ -25,6 +25,11 @@ CREATE TABLE profiles (
   provider_type TEXT, -- 'independent' or 'business'
   bio TEXT,
   work_mode TEXT, -- 'solo' or 'helper'
+  -- Business Legal requirements
+  cuit TEXT,
+  fiscal_address TEXT,
+  legal_docs_url TEXT,
+  certificates_url TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

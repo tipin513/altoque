@@ -28,6 +28,11 @@ export default function ProfilePage() {
     const [businessHours, setBusinessHours] = useState('');
     const [yearsInBusiness, setYearsInBusiness] = useState('');
 
+    // Independent fields
+    const [providerType, setProviderType] = useState<'independent' | 'business'>('independent');
+    const [bio, setBio] = useState('');
+    const [workMode, setWorkMode] = useState('solo');
+
     const [error, setError] = useState<string | null>(null);
     const [hasChanges, setHasChanges] = useState(false);
 
@@ -41,7 +46,9 @@ export default function ProfilePage() {
         legalName: '',
         website: '',
         businessHours: '',
-        yearsInBusiness: ''
+        yearsInBusiness: '',
+        bio: '',
+        workMode: 'solo'
     });
 
     useEffect(() => {
@@ -72,6 +79,11 @@ export default function ProfilePage() {
                 const businessHoursVal = profileData.business_hours || '';
                 const yearsVal = profileData.years_in_business?.toString() || '';
 
+                // Independent vals
+                const providerTypeVal = profileData.provider_type || 'independent';
+                const bioVal = profileData.bio || '';
+                const workModeVal = profileData.work_mode || 'solo';
+
                 setPhone(phoneVal);
                 setLocationId(locationVal);
                 setAddress(addressVal);
@@ -83,6 +95,10 @@ export default function ProfilePage() {
                 setBusinessHours(businessHoursVal);
                 setYearsInBusiness(yearsVal);
 
+                setProviderType(providerTypeVal);
+                setBio(bioVal);
+                setWorkMode(workModeVal);
+
                 // Store original values
                 setOriginalValues({
                     phone: phoneVal,
@@ -93,7 +109,9 @@ export default function ProfilePage() {
                     legalName: legalNameVal,
                     website: websiteVal,
                     businessHours: businessHoursVal,
-                    yearsInBusiness: yearsVal
+                    yearsInBusiness: yearsVal,
+                    bio: bioVal,
+                    workMode: workModeVal
                 });
             }
 
@@ -121,10 +139,12 @@ export default function ProfilePage() {
             legalName !== originalValues.legalName ||
             website !== originalValues.website ||
             businessHours !== originalValues.businessHours ||
-            yearsInBusiness !== originalValues.yearsInBusiness;
+            yearsInBusiness !== originalValues.yearsInBusiness ||
+            bio !== originalValues.bio ||
+            workMode !== originalValues.workMode;
 
         setHasChanges(changed);
-    }, [phone, locationId, address, servicePreferences, businessName, legalName, website, businessHours, yearsInBusiness, originalValues]);
+    }, [phone, locationId, address, servicePreferences, businessName, legalName, website, businessHours, yearsInBusiness, bio, workMode, originalValues]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -310,8 +330,8 @@ export default function ProfilePage() {
                                                     type="button"
                                                     onClick={() => setWorkMode('solo')}
                                                     className={`py-3 px-4 rounded-2xl border text-sm font-medium transition-all ${workMode === 'solo'
-                                                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-md transform scale-102'
-                                                            : 'bg-white text-slate-600 border-indigo-100 hover:bg-indigo-50'
+                                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-md transform scale-102'
+                                                        : 'bg-white text-slate-600 border-indigo-100 hover:bg-indigo-50'
                                                         }`}
                                                 >
                                                     👤 Trabajo solo
@@ -320,8 +340,8 @@ export default function ProfilePage() {
                                                     type="button"
                                                     onClick={() => setWorkMode('helper')}
                                                     className={`py-3 px-4 rounded-2xl border text-sm font-medium transition-all ${workMode === 'helper'
-                                                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-md transform scale-102'
-                                                            : 'bg-white text-slate-600 border-indigo-100 hover:bg-indigo-50'
+                                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-md transform scale-102'
+                                                        : 'bg-white text-slate-600 border-indigo-100 hover:bg-indigo-50'
                                                         }`}
                                                 >
                                                     👥 Con ayudante ocasional

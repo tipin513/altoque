@@ -1,4 +1,3 @@
-```typescript
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import {
@@ -106,7 +105,7 @@ export default async function CategoriesPage() {
                         return (
                             <Link
                                 key={cat.slug}
-                                href={`/ search ? category = ${ cat.slug } `}
+                                href={`/search?category=${cat.slug}`}
                                 className="group at-card p-8 border-none bg-white hover:ring-4 hover:ring-indigo-50 transition-all duration-500 block relative overflow-hidden"
                             >
                                 {/* Decorative background element */}
@@ -115,7 +114,7 @@ export default async function CategoriesPage() {
                                 </div>
 
                                 <div className="relative z-10 space-y-6">
-                                    <div className={`w - 14 h - 14 rounded - 2xl flex items - center justify - center ${ cat.color } group - hover: scale - 110 transition - all duration - 500 shadow - sm`}>
+                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${cat.color} group-hover:scale-110 transition-all duration-500 shadow-sm`}>
                                         <IconComponent size={28} />
                                     </div>
 

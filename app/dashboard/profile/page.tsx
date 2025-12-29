@@ -148,11 +148,19 @@ export default function ProfilePage() {
 
         // Add business fields if provider
         if (profile?.role === 'prestador') {
-            updateData.business_name = businessName;
-            updateData.legal_name = legalName;
-            updateData.website = website;
-            updateData.business_hours = businessHours;
-            updateData.years_in_business = yearsInBusiness ? parseInt(yearsInBusiness) : null;
+            if (providerType === 'business') {
+                updateData.business_name = businessName;
+                updateData.legal_name = legalName;
+                updateData.website = website;
+                updateData.business_hours = businessHours;
+                updateData.years_in_business = yearsInBusiness ? parseInt(yearsInBusiness) : null;
+            } else {
+                // Independent fields
+                updateData.bio = bio;
+                updateData.years_in_business = yearsInBusiness ? parseInt(yearsInBusiness) : null;
+                updateData.business_hours = businessHours; // Reusing for availability
+                updateData.work_mode = workMode;
+            }
         }
 
         const { data, error: updateError } = await supabase
@@ -176,7 +184,9 @@ export default function ProfilePage() {
                 legalName,
                 website,
                 businessHours,
-                yearsInBusiness
+                yearsInBusiness,
+                bio,
+                workMode
             });
             setHasChanges(false);
             setTimeout(() => setSuccess(false), 3000);
@@ -242,75 +252,153 @@ export default function ProfilePage() {
                         {profile?.role === 'prestador' && (
                             <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100 mb-6 space-y-6">
                                 <h3 className="font-bold text-indigo-900 flex items-center gap-2">
-                                    <span className="text-xl">🏢</span> Información del Negocio
+                                    <span className="text-xl">
+                                        {providerType === 'independent' ? '🛠️' : '🏢'}
+                                    </span>
+                                    {providerType === 'independent' ? 'Perfil Profesional' : 'Información del Negocio'}
                                 </h3>
 
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
-                                            Nombre Comercial
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={businessName}
-                                            onChange={(e) => setBusinessName(e.target.value)}
-                                            placeholder="Nombre de tu empresa"
-                                            className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
-                                            Razón Social
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={legalName}
-                                            onChange={(e) => setLegalName(e.target.value)}
-                                            placeholder="Nombre legal (opcional)"
-                                            className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
-                                        />
-                                    </div>
-                                </div>
+                                {providerType === 'independent' ? (
+                                    <>
+                                        <div>
+                                            <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                                Descripción Breve (Bio)
+                                            </label>
+                                            <textarea
+                                                value={bio}
+                                                onChange={(e) => setBio(e.target.value)}
+                                                placeholder="Ej: Electricista matriculado, urgencias 24 hs"
+                                                rows={3}
+                                                className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all resize-none"
+                                            />
+                                            <p className="text-xs text-slate-500 mt-2">Un título corto que describa tu servicio</p>
+                                        </div>
 
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
-                                            Sitio Web / Redes
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={website}
-                                            onChange={(e) => setWebsite(e.target.value)}
-                                            placeholder="ej: www.miempresa.com"
-                                            className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
-                                            Años en actividad
-                                        </label>
-                                        <input
-                                            type="number"
-                                            value={yearsInBusiness}
-                                            onChange={(e) => setYearsInBusiness(e.target.value)}
-                                            placeholder="Ej: 5"
-                                            className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
-                                        />
-                                    </div>
-                                </div>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                                    Años de experiencia
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    value={yearsInBusiness}
+                                                    onChange={(e) => setYearsInBusiness(e.target.value)}
+                                                    placeholder="Ej: 5"
+                                                    className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                                    Días y horarios disponibles
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={businessHours}
+                                                    onChange={(e) => setBusinessHours(e.target.value)}
+                                                    placeholder="Ej: Lun a Sab 8 a 18hs"
+                                                    className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                                />
+                                            </div>
+                                        </div>
 
-                                <div>
-                                    <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
-                                        Horarios de Atención
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={businessHours}
-                                        onChange={(e) => setBusinessHours(e.target.value)}
-                                        placeholder="Ej: Lun a Vie 9 a 18hs"
-                                        className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
-                                    />
-                                </div>
+                                        <div>
+                                            <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                                Modalidad de Trabajo
+                                            </label>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setWorkMode('solo')}
+                                                    className={`py-3 px-4 rounded-2xl border text-sm font-medium transition-all ${workMode === 'solo'
+                                                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-md transform scale-102'
+                                                            : 'bg-white text-slate-600 border-indigo-100 hover:bg-indigo-50'
+                                                        }`}
+                                                >
+                                                    👤 Trabajo solo
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setWorkMode('helper')}
+                                                    className={`py-3 px-4 rounded-2xl border text-sm font-medium transition-all ${workMode === 'helper'
+                                                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-md transform scale-102'
+                                                            : 'bg-white text-slate-600 border-indigo-100 hover:bg-indigo-50'
+                                                        }`}
+                                                >
+                                                    👥 Con ayudante ocasional
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                                    Nombre Comercial
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={businessName}
+                                                    onChange={(e) => setBusinessName(e.target.value)}
+                                                    placeholder="Nombre de tu empresa"
+                                                    className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                                    Razón Social
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={legalName}
+                                                    onChange={(e) => setLegalName(e.target.value)}
+                                                    placeholder="Nombre legal (opcional)"
+                                                    className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                                    Sitio Web / Redes
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={website}
+                                                    onChange={(e) => setWebsite(e.target.value)}
+                                                    placeholder="ej: www.miempresa.com"
+                                                    className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                                    Años en actividad
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    value={yearsInBusiness}
+                                                    onChange={(e) => setYearsInBusiness(e.target.value)}
+                                                    placeholder="Ej: 5"
+                                                    className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                                Horarios de Atención
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={businessHours}
+                                                onChange={(e) => setBusinessHours(e.target.value)}
+                                                placeholder="Ej: Lun a Vie 9 a 18hs"
+                                                className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                            />
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         )}
 

@@ -27,7 +27,7 @@ export default async function DashboardPage() {
         { name: 'Contrataciones', icon: Activity, href: '/dashboard/my-hires' },
         ...(isPrestador ? [{ name: 'Trabajos', icon: Briefcase, href: '/dashboard/my-jobs', badge: true }] : []),
         { name: 'Publicaciones', icon: List, href: '/dashboard/my-services' },
-        { name: 'Insignias', icon: ShieldCheck, href: '/dashboard/badges' }, // DEBUG: Link temporal para verificar cambios
+        { name: 'Insignias', icon: ShieldCheck, href: '/dashboard/verification' }, // Updated link
         { name: 'Mensajes', icon: MessageSquare, href: '/dashboard/messages', notification: true },
         ...(isPrestador ? [{ name: 'Reputación', icon: TrendingUp, href: '/dashboard/reputation' }] : []),
         { name: 'Configuración', icon: Settings, href: '/dashboard/settings' },

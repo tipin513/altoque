@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {
   Wrench, PaintBucket, Droplets, Hammer, Zap, Monitor, Lightbulb, ShieldCheck,
-  Clock, ChevronRight, Star, ArrowRight, CheckCircle2, MapPin, Bike, Car, Truck
+  Clock, ChevronRight, Star, ArrowRight, CheckCircle2, MapPin, HardHat, CarFront, Truck
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { formatPrice } from '@/lib/utils';
@@ -18,9 +18,9 @@ const CATEGORIES = [
   { name: 'Albañilería', icon: Hammer, slug: 'albanileria', color: 'bg-slate-50 text-slate-600' },
   { name: 'Gas', icon: Lightbulb, slug: 'gas', color: 'bg-orange-50 text-orange-600' },
   { name: 'Soporte Técnico', icon: Monitor, slug: 'soporte-tecnico', color: 'bg-indigo-50 text-indigo-600' },
-  { name: 'Cadetería', icon: Bike, slug: 'cadeteria', color: 'bg-red-50 text-red-600' },
-  { name: 'Remis', icon: Car, slug: 'remis', color: 'bg-zinc-50 text-zinc-600' },
-  { name: 'Fletes', icon: Truck, slug: 'fletes', color: 'bg-yellow-50 text-yellow-600' },
+  { name: 'Cadetería', icon: HardHat, slug: 'cadeteria', color: 'bg-red-50 text-red-600' },
+  { name: 'Remis', icon: CarFront, slug: 'remis', color: 'bg-zinc-50 text-zinc-600' },
+  { name: 'Fletes y Mudanzas', icon: Truck, slug: 'fletes', color: 'bg-yellow-50 text-yellow-600' },
 ];
 
 export default async function Home() {

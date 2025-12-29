@@ -1,15 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, Suspense } from 'react';
+import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { CheckCircle2, Mail } from 'lucide-react';
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-
-function RegisterForm() {
+export default function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
@@ -19,14 +16,7 @@ function RegisterForm() {
     const [registered, setRegistered] = useState(false);
 
     const router = useRouter();
-    const searchParams = useSearchParams();
     const supabase = createClient();
-
-    // Pre-select role if passed in URL
-    useEffect(() => {
-        const r = searchParams.get('role');
-        if (r === 'prestador' || r === 'cliente') setRole(r as any);
-    }, [searchParams]);
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -179,20 +169,5 @@ function RegisterForm() {
                 </p>
             </div>
         </div>
-    );
-}
-
-export default function RegisterPage() {
-    return (
-        <Suspense fallback={
-            <div className="min-h-[90vh] flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-slate-500 font-bold">Cargando...</p>
-                </div>
-            </div>
-        }>
-            <RegisterForm />
-        </Suspense>
     );
 }

@@ -336,28 +336,22 @@ export default function ProfilePage() {
                                     {providerType === 'independent' ? 'Perfil Profesional' : 'Información del Negocio'}
                                 </h3>
 
-                                {/* Provider Type Selector */}
-                                <div className="bg-white p-2 rounded-2xl border border-indigo-100 flex gap-2 mb-6">
-                                    <button
-                                        type="button"
-                                        onClick={() => setProviderType('independent')}
-                                        className={`flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${providerType === 'independent'
-                                            ? 'bg-indigo-600 text-white shadow-md'
-                                            : 'text-slate-500 hover:bg-slate-50'
-                                            }`}
-                                    >
-                                        🛠️ Independiente
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setProviderType('business')}
-                                        className={`flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${providerType === 'business'
-                                            ? 'bg-indigo-600 text-white shadow-md'
-                                            : 'text-slate-500 hover:bg-slate-50'
-                                            }`}
-                                    >
-                                        🏢 Empresa
-                                    </button>
+                                {/* Provider Type Indicator (Read-only) */}
+                                <div className="bg-indigo-100/50 p-4 rounded-2xl border border-indigo-200 flex items-center gap-3 mb-6">
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${providerType === 'independent' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                                        🛠️
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-0.5">Tipo de Cuenta</p>
+                                        <p className="text-indigo-900 font-bold text-lg leading-none">
+                                            {providerType === 'independent' ? 'Profesional Independiente' : 'Empresa / PyME'}
+                                        </p>
+                                    </div>
+                                    {providerType === 'business' && (
+                                        <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center text-lg shadow-sm">
+                                            🏢
+                                        </div>
+                                    )}
                                 </div>
 
                                 {providerType === 'independent' ? (

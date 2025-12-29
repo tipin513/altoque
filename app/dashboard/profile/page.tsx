@@ -236,193 +236,192 @@ export default function ProfilePage() {
                             <p className="text-slate-500 text-sm">Ayudanos a brindarte un mejor servicio</p>
                         </div>
                     </div>
+
+                    <form onSubmit={handleSave} className="space-y-6">
+                        {/* Fields for Providers */}
+                        {profile?.role === 'prestador' && (
+                            <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100 mb-6 space-y-6">
+                                <h3 className="font-bold text-indigo-900 flex items-center gap-2">
+                                    <span className="text-xl">🏢</span> Información del Negocio
+                                </h3>
+
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                            Nombre Comercial
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={businessName}
+                                            onChange={(e) => setBusinessName(e.target.value)}
+                                            placeholder="Nombre de tu empresa"
+                                            className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                            Razón Social
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={legalName}
+                                            onChange={(e) => setLegalName(e.target.value)}
+                                            placeholder="Nombre legal (opcional)"
+                                            className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                            Sitio Web / Redes
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={website}
+                                            onChange={(e) => setWebsite(e.target.value)}
+                                            placeholder="ej: www.miempresa.com"
+                                            className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                            Años en actividad
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={yearsInBusiness}
+                                            onChange={(e) => setYearsInBusiness(e.target.value)}
+                                            placeholder="Ej: 5"
+                                            className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                        Horarios de Atención
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={businessHours}
+                                        onChange={(e) => setBusinessHours(e.target.value)}
+                                        placeholder="Ej: Lun a Vie 9 a 18hs"
+                                        className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        <div>
+                            <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <Phone size={16} />
+                                Teléfono
+                            </label>
+                            <input
+                                type="tel"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                placeholder="Ej: +54 9 11 1234-5678"
+                                className="w-full px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100 focus:border-indigo-500 focus:bg-white focus:shadow-md outline-none transition-all text-slate-700"
+                            />
+                            <p className="text-xs text-slate-500 mt-2">Para contacto rápido con prestadores o clientes</p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <MapPin size={16} />
+                                Zona / Localidad
+                            </label>
+                            <select
+                                value={locationId}
+                                onChange={(e) => setLocationId(e.target.value)}
+                                className="w-full px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100 focus:border-indigo-500 focus:bg-white focus:shadow-md outline-none transition-all text-slate-700"
+                            >
+                                <option value="">Seleccioná tu zona</option>
+                                {locations.map((loc) => (
+                                    <option key={loc.id} value={loc.id}>
+                                        {loc.city}, {loc.province}
+                                    </option>
+                                ))}
+                            </select>
+                            <p className="text-xs text-slate-500 mt-2">Esto nos ayuda a mostrarte servicios cercanos</p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <Home size={16} />
+                                Dirección Aproximada
+                            </label>
+                            <input
+                                type="text"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                                placeholder="Ej: Barrio Palermo, cerca de Plaza Italia"
+                                className="w-full px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100 focus:border-indigo-500 focus:bg-white focus:shadow-md outline-none transition-all text-slate-700"
+                            />
+                            <p className="text-xs text-slate-500 mt-2">No es necesario que sea exacta, solo una referencia</p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <Star size={16} />
+                                Preferencias de Servicios
+                            </label>
+                            <textarea
+                                value={servicePreferences}
+                                onChange={(e) => setServicePreferences(e.target.value)}
+                                placeholder="Ej: Prefiero servicios de plomería, electricidad y jardinería"
+                                rows={4}
+                                className="w-full px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100 focus:border-indigo-500 focus:bg-white focus:shadow-md outline-none transition-all text-slate-700 resize-none"
+                            />
+                            <p className="text-xs text-slate-500 mt-2">Ayudanos a recomendarte servicios relevantes</p>
+                        </div>
+
+                        {error && (
+                            <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center gap-3 text-rose-600 text-sm font-medium">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                {error}
+                            </div>
+                        )}
+
+                        {success && (
+                            <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3 text-emerald-600 text-sm font-medium">
+                                <CheckCircle size={18} />
+                                ¡Perfil actualizado correctamente!
+                            </div>
+                        )}
+
+                        <div className="flex gap-4">
+                            <button
+                                type="submit"
+                                disabled={saving || !hasChanges}
+                                className="btn-primary h-14 px-8 rounded-2xl text-lg flex items-center justify-center gap-2 flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {saving ? (
+                                    <>
+                                        <Loader2 size={24} className="animate-spin" />
+                                        Guardando...
+                                    </>
+                                ) : hasChanges ? (
+                                    'Guardar Cambios'
+                                ) : (
+                                    '✓ Guardado'
+                                )}
+                            </button>
+                            <Link
+                                href="/dashboard"
+                                className="h-14 px-8 rounded-2xl text-lg flex items-center justify-center border-2 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-bold"
+                            >
+                                Volver al Panel
+                            </Link>
+                        </div>
+                    </form>
                 </div>
-
-                <form onSubmit={handleSave} className="space-y-6">
-                    {/* Fields for Providers */}
-                    {profile?.role === 'prestador' && (
-                        <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100 mb-6 space-y-6">
-                            <h3 className="font-bold text-indigo-900 flex items-center gap-2">
-                                <span className="text-xl">🏢</span> Información del Negocio
-                            </h3>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
-                                        Nombre Comercial
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={businessName}
-                                        onChange={(e) => setBusinessName(e.target.value)}
-                                        placeholder="Nombre de tu empresa"
-                                        className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
-                                        Razón Social
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={legalName}
-                                        onChange={(e) => setLegalName(e.target.value)}
-                                        placeholder="Nombre legal (opcional)"
-                                        className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
-                                        Sitio Web / Redes
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={website}
-                                        onChange={(e) => setWebsite(e.target.value)}
-                                        placeholder="ej: www.miempresa.com"
-                                        className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
-                                        Años en actividad
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={yearsInBusiness}
-                                        onChange={(e) => setYearsInBusiness(e.target.value)}
-                                        placeholder="Ej: 5"
-                                        className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
-                                    Horarios de Atención
-                                </label>
-                                <input
-                                    type="text"
-                                    value={businessHours}
-                                    onChange={(e) => setBusinessHours(e.target.value)}
-                                    placeholder="Ej: Lun a Vie 9 a 18hs"
-                                    className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
-                                />
-                            </div>
-                        </div>
-                    )}
-
-                    <div>
-                        <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <Phone size={16} />
-                            Teléfono
-                        </label>
-                        <input
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            placeholder="Ej: +54 9 11 1234-5678"
-                            className="w-full px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100 focus:border-indigo-500 focus:bg-white focus:shadow-md outline-none transition-all text-slate-700"
-                        />
-                        <p className="text-xs text-slate-500 mt-2">Para contacto rápido con prestadores o clientes</p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <MapPin size={16} />
-                            Zona / Localidad
-                        </label>
-                        <select
-                            value={locationId}
-                            onChange={(e) => setLocationId(e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100 focus:border-indigo-500 focus:bg-white focus:shadow-md outline-none transition-all text-slate-700"
-                        >
-                            <option value="">Seleccioná tu zona</option>
-                            {locations.map((loc) => (
-                                <option key={loc.id} value={loc.id}>
-                                    {loc.city}, {loc.province}
-                                </option>
-                            ))}
-                        </select>
-                        <p className="text-xs text-slate-500 mt-2">Esto nos ayuda a mostrarte servicios cercanos</p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <Home size={16} />
-                            Dirección Aproximada
-                        </label>
-                        <input
-                            type="text"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                            placeholder="Ej: Barrio Palermo, cerca de Plaza Italia"
-                            className="w-full px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100 focus:border-indigo-500 focus:bg-white focus:shadow-md outline-none transition-all text-slate-700"
-                        />
-                        <p className="text-xs text-slate-500 mt-2">No es necesario que sea exacta, solo una referencia</p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <Star size={16} />
-                            Preferencias de Servicios
-                        </label>
-                        <textarea
-                            value={servicePreferences}
-                            onChange={(e) => setServicePreferences(e.target.value)}
-                            placeholder="Ej: Prefiero servicios de plomería, electricidad y jardinería"
-                            rows={4}
-                            className="w-full px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100 focus:border-indigo-500 focus:bg-white focus:shadow-md outline-none transition-all text-slate-700 resize-none"
-                        />
-                        <p className="text-xs text-slate-500 mt-2">Ayudanos a recomendarte servicios relevantes</p>
-                    </div>
-
-                    {error && (
-                        <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center gap-3 text-rose-600 text-sm font-medium">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            {error}
-                        </div>
-                    )}
-
-                    {success && (
-                        <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3 text-emerald-600 text-sm font-medium">
-                            <CheckCircle size={18} />
-                            ¡Perfil actualizado correctamente!
-                        </div>
-                    )}
-
-                    <div className="flex gap-4">
-                        <button
-                            type="submit"
-                            disabled={saving || !hasChanges}
-                            className="btn-primary h-14 px-8 rounded-2xl text-lg flex items-center justify-center gap-2 flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {saving ? (
-                                <>
-                                    <Loader2 size={24} className="animate-spin" />
-                                    Guardando...
-                                </>
-                            ) : hasChanges ? (
-                                'Guardar Cambios'
-                            ) : (
-                                '✓ Guardado'
-                            )}
-                        </button>
-                        <Link
-                            href="/dashboard"
-                            className="h-14 px-8 rounded-2xl text-lg flex items-center justify-center border-2 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-bold"
-                        >
-                            Volver al Panel
-                        </Link>
-                    </div>
-                </form>
             </div>
-        </div>
         </div >
     );
 }

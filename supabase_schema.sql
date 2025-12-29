@@ -21,6 +21,10 @@ CREATE TABLE profiles (
   social_media TEXT,
   business_hours TEXT,
   years_in_business INTEGER,
+  -- Independent Professional fields
+  provider_type TEXT, -- 'independent' or 'business'
+  bio TEXT,
+  work_mode TEXT, -- 'solo' or 'helper'
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

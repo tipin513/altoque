@@ -6,6 +6,9 @@ import {
 import { createClient } from '@/lib/supabase/server';
 import { formatPrice } from '@/lib/utils';
 
+import HeroSearch from '@/components/HeroSearch';
+import DynamicHeroTitle from '@/components/DynamicHeroTitle';
+
 const CATEGORIES = [
   { name: 'Aire Acondicionado', icon: Wrench, slug: 'aire-acondicionado', color: 'bg-blue-50 text-blue-600' },
   { name: 'Electricidad', icon: Zap, slug: 'electricidad', color: 'bg-amber-50 text-amber-600' },
@@ -29,43 +32,83 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section - Modern & Clean */}
-      <section className="relative overflow-hidden bg-white pt-16 pb-24">
-        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[400px] h-[400px] bg-cyan-50 rounded-full blur-3xl opacity-50"></div>
+      {/* Hero Section - Redesigned */}
+      <section className="relative overflow-hidden bg-white pt-20 pb-28">
+        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-indigo-50 rounded-full blur-3xl opacity-60"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[400px] h-[400px] bg-cyan-50 rounded-full blur-3xl opacity-60"></div>
 
         <div className="max-w-[1240px] mx-auto px-6 relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-16">
             <div className="lg:w-1/2 space-y-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-sm font-bold">
-                <Star size={14} fill="currentColor" />
-                <span>La red de servicios #1 de Argentina</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-bold uppercase tracking-widest">
+                <Star size={12} fill="currentColor" />
+                <span>La red #1 de Argentina</span>
               </div>
+
               <h1 className="text-5xl lg:text-7xl font-black text-slate-900 leading-[1.1] tracking-tight">
-                Servicios a domicilio, <span className="text-indigo-600">sin vueltas.</span>
+                ¿Necesitás un <br />
+                <DynamicHeroTitle /> <br />
+                <span className="text-slate-900">sin vueltas?</span>
               </h1>
-              <p className="text-xl text-slate-500 leading-relaxed max-w-[500px]">
-                Conectamos a los mejores profesionales con los clientes que los necesitan hoy mismo. Rápido, seguro y profesional.
+
+              <p className="text-xl text-slate-500 leading-relaxed max-w-[480px]">
+                Conectamos a clientes con profesionales verificados en minutos. Rápido, seguro y con precios claros.
               </p>
-              <div className="flex flex-wrap gap-4 pt-4">
-                <Link href="/search" className="btn-primary py-4 px-10 text-lg rounded-2xl">
-                  Encontrar un servicio
-                  <ArrowRight size={20} />
-                </Link>
-                <Link href="/register?role=prestador" className="btn-secondary py-4 px-10 text-lg rounded-2xl">
-                  Soy profesional
-                </Link>
+
+              <div className="pt-2">
+                <HeroSearch />
+              </div>
+
+              <div className="flex items-center gap-4 pt-4">
+                <div className="flex -space-x-3">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
+                      <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="User" />
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-900">+500 Profesionales</p>
+                  <div className="flex items-center gap-1 text-xs text-slate-500 font-medium">
+                    <Star size={12} className="text-amber-400" fill="currentColor" />
+                    <span>4.9/5 Calificación promedio</span>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div className="lg:w-1/2 relative group">
               <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-[40px] blur-2xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
-              <div className="relative aspect-[4/3] rounded-[32px] overflow-hidden shadow-2xl border-8 border-white">
+              <div className="relative aspect-[4/3] rounded-[32px] overflow-hidden shadow-2xl border-8 border-white bg-slate-100">
                 <img
                   src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=2069&auto=format&fit=crop"
                   alt="Servicios profesionales"
                   className="w-full h-full object-cover"
                 />
+
+                {/* Floating Card 1 */}
+                <div className="absolute top-8 right-8 bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-xl border border-white/50 flex items-center gap-3 animate-bounce shadow-indigo-500/10" style={{ animationDuration: '3s' }}>
+                  <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                    <Zap size={20} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-900">Electricista matriculado</p>
+                    <p className="text-[10px] text-slate-500">Llegando en 15 min</p>
+                  </div>
+                </div>
+
+                {/* Floating Card 2 */}
+                <div className="absolute bottom-8 left-8 bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-xl border border-white/50 flex items-center gap-3 shadow-indigo-500/10">
+                  <div className="flex -space-x-2">
+                    <div className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white overflow-hidden"><img src="https://i.pravatar.cc/100?img=33" /></div>
+                    <div className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white overflow-hidden"><img src="https://i.pravatar.cc/100?img=12" /></div>
+                    <div className="w-8 h-8 rounded-full bg-indigo-600 border-2 border-white flex items-center justify-center text-white text-[10px] font-bold">+12</div>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-900">Presupuestos recibidos</p>
+                    <p className="text-[10px] text-slate-500">En la última hora</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

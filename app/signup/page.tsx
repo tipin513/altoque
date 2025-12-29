@@ -14,6 +14,7 @@ export default function SignupPage() {
     const [locationId, setLocationId] = useState('');
     const [role, setRole] = useState<'cliente' | 'prestador'>('cliente');
     // Business fields (for providers)
+    const [providerType, setProviderType] = useState<'independent' | 'business'>('independent');
     const [businessName, setBusinessName] = useState('');
     const [phone, setPhone] = useState('');
     const [loading, setLoading] = useState(false);
@@ -165,8 +166,8 @@ export default function SignupPage() {
                                     type="button"
                                     onClick={() => setProviderType('independent')}
                                     className={`py-2 px-3 text-sm border rounded-lg transition-all ${providerType === 'independent'
-                                            ? 'bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500'
-                                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                        ? 'bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500'
+                                        : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
                                         }`}
                                 >
                                     Profesional Independiente
@@ -175,8 +176,8 @@ export default function SignupPage() {
                                     type="button"
                                     onClick={() => setProviderType('business')}
                                     className={`py-2 px-3 text-sm border rounded-lg transition-all ${providerType === 'business'
-                                            ? 'bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500'
-                                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                        ? 'bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500'
+                                        : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
                                         }`}
                                 >
                                     Empresa / PyME

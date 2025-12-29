@@ -72,37 +72,6 @@ export default function SignupPage() {
             return;
         }
 
-        // Update or Insert profile with additional fields
-        if (authData.user) {
-            const updateData: any = {
-                id: authData.user.id,
-                full_name: fullName,
-                role: role,
-                location_id: locationId ? parseInt(locationId) : null
-            };
-
-            // Add business fields for providers
-            if (role === 'prestador') {
-                updateData.provider_type = providerType;
-
-                if (providerType === 'business') {
-                    updateData.business_name = businessName;
-                }
-                updateData.phone = phone;
-            }
-
-            // Upsert ensures we save the data even if trigger verification is pending
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .upsert(updateData);
-
-            if (profileError) {
-                console.error('Error updating profile:', profileError);
-                // Alert the user so they know something failed
-                alert(`Error al guardar datos del perfil: ${profileError.message}`);
-            }
-        }
-
         if (authData.session) {
             router.push('/dashboard/profile');
             router.refresh();

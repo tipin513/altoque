@@ -81,6 +81,39 @@ export default async function DashboardPage() {
                             <p className="text-slate-500 text-lg">Bienvenido a tu panel de control.</p>
                         </header>
 
+                        {/* Profile Completion Warning */}
+                        {isPrestador && (
+                            (() => {
+                                const isBusiness = profile?.provider_type === 'business';
+                                const missingBusiness = isBusiness && (!profile?.cuit || !profile?.fiscal_address || !profile?.legal_name);
+                                const missingIndependent = !isBusiness && (!profile?.bio || !profile?.phone); // Phone is usually required in signup but good to double check
+
+                                if (missingBusiness || missingIndependent) {
+                                    return (
+                                        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-10 flex items-start gap-4 shadow-sm">
+                                            <div className="p-3 bg-amber-100 rounded-xl text-amber-600">
+                                                <Settings size={24} />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h3 className="text-lg font-bold text-amber-900 mb-1">
+                                                    ⚠️ Tu perfil está incompleto
+                                                </h3>
+                                                <p className="text-amber-700 text-sm mb-4">
+                                                    {isBusiness
+                                                        ? "Para poder publicar servicios, necesitamos que completes tu Documentación Legal (CUIT, Dirección Fiscal, Razón Social)."
+                                                        : "Para destacar más, te recomendamos completar tu Bio y asegurar que tus datos de contacto estén actualizados."}
+                                                </p>
+                                                <Link href="/dashboard/profile" className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition-colors text-sm">
+                                                    Completar Perfil ahora
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            })()
+                        )}
+
                         {/* Quick Actions */}
                         {isPrestador ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">

@@ -1,12 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, Mail } from 'lucide-react';
 
-export default function RegisterPage() {
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
+function RegisterForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
@@ -176,5 +179,20 @@ export default function RegisterPage() {
                 </p>
             </div>
         </div>
+    );
+}
+
+export default function RegisterPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-[90vh] flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                    <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-slate-500 font-bold">Cargando...</p>
+                </div>
+            </div>
+        }>
+            <RegisterForm />
+        </Suspense>
     );
 }

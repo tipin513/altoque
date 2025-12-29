@@ -20,6 +20,7 @@ export default function ProfilePage() {
     const [locationId, setLocationId] = useState('');
     const [address, setAddress] = useState('');
     const [servicePreferences, setServicePreferences] = useState('');
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         async function loadProfile() {
@@ -60,11 +61,23 @@ export default function ProfilePage() {
         e.preventDefault();
         setSaving(true);
         setSuccess(false);
+        setError(null);
 
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+            setError('No estás autenticado');
+            setSaving(false);
+            return;
+        }
 
-        const { error } = await supabase
+        console.log('Guardando perfil:', {
+            phone,
+            location_id: locationId ? parseInt(locationId) : null,
+            address,
+            service_preferences: servicePreferences,
+        });
+
+        const { data, error: updateError } = await supabase
             .from('profiles')
             .update({
                 phone,
@@ -72,9 +85,15 @@ export default function ProfilePage() {
                 address,
                 service_preferences: servicePreferences,
             })
-            .eq('id', user.id);
+            .eq('id', user.id)
+            .select();
 
-        if (!error) {
+        console.log('Resultado:', { data, error: updateError });
+
+        if (updateError) {
+            console.error('Error al guardar:', updateError);
+            setError(updateError.message || 'Error al guardar los cambios');
+        } else {
             setSuccess(true);
             setTimeout(() => setSuccess(false), 3000);
         }
@@ -199,6 +218,15 @@ export default function ProfilePage() {
                             />
                             <p className="text-xs text-slate-500 mt-2">Ayudanos a recomendarte servicios relevantes</p>
                         </div>
+
+                        {error && (
+                            <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center gap-3 text-rose-600 text-sm font-medium">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                {error}
+                            </div>
+                        )}
 
                         {success && (
                             <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3 text-emerald-600 text-sm font-medium">

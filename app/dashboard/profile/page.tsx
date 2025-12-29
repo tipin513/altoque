@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { User, MapPin, Phone, Home, Star, ChevronRight, Loader2, CheckCircle } from 'lucide-react';
+import { User, MapPin, Phone, Home, Star, ChevronRight, Loader2, CheckCircle, Instagram } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProfilePage() {
@@ -20,6 +20,7 @@ export default function ProfilePage() {
     const [locationId, setLocationId] = useState('');
     const [address, setAddress] = useState('');
     const [servicePreferences, setServicePreferences] = useState('');
+    const [instagramHandle, setInstagramHandle] = useState('');
 
     // Business fields
     const [businessName, setBusinessName] = useState('');
@@ -47,6 +48,7 @@ export default function ProfilePage() {
         locationId: '',
         address: '',
         servicePreferences: '',
+        instagramHandle: '',
         businessName: '',
         legalName: '',
         website: '',
@@ -81,6 +83,7 @@ export default function ProfilePage() {
                 const locationVal = profileData.location_id?.toString() || '';
                 const addressVal = profileData.address || '';
                 const preferencesVal = profileData.service_preferences || '';
+                const instagramVal = profileData.instagram_handle || '';
 
                 // Business vals
                 const businessNameVal = profileData.business_name || '';
@@ -102,6 +105,7 @@ export default function ProfilePage() {
                 setLocationId(locationVal);
                 setAddress(addressVal);
                 setServicePreferences(preferencesVal);
+                setInstagramHandle(instagramVal);
 
                 setBusinessName(businessNameVal);
                 setLegalName(legalNameVal);
@@ -124,6 +128,7 @@ export default function ProfilePage() {
                     locationId: locationVal,
                     address: addressVal,
                     servicePreferences: preferencesVal,
+                    instagramHandle: instagramVal,
                     businessName: businessNameVal,
                     legalName: legalNameVal,
                     website: websiteVal,
@@ -159,6 +164,7 @@ export default function ProfilePage() {
             locationId !== originalValues.locationId ||
             address !== originalValues.address ||
             servicePreferences !== originalValues.servicePreferences ||
+            instagramHandle !== originalValues.instagramHandle ||
             businessName !== originalValues.businessName ||
             legalName !== originalValues.legalName ||
             website !== originalValues.website ||
@@ -173,7 +179,7 @@ export default function ProfilePage() {
             providerType !== originalValues.providerType;
 
         setHasChanges(changed);
-    }, [phone, locationId, address, servicePreferences, businessName, legalName, website, businessHours, yearsInBusiness, bio, workMode, cuit, fiscalAddress, legalDocsUrl, certificatesUrl, providerType, originalValues]);
+    }, [phone, locationId, address, servicePreferences, instagramHandle, businessName, legalName, website, businessHours, yearsInBusiness, bio, workMode, cuit, fiscalAddress, legalDocsUrl, certificatesUrl, providerType, originalValues]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -193,6 +199,7 @@ export default function ProfilePage() {
             location_id: locationId ? parseInt(locationId) : null,
             address,
             service_preferences: servicePreferences,
+            instagram_handle: instagramHandle,
         };
 
         // Add business fields if provider
@@ -253,6 +260,7 @@ export default function ProfilePage() {
                 locationId,
                 address,
                 servicePreferences,
+                instagramHandle,
                 businessName,
                 legalName,
                 website,
@@ -326,6 +334,34 @@ export default function ProfilePage() {
                     </div>
 
                     <form onSubmit={handleSave} className="space-y-6">
+
+                        {/* Instagram Field for ALL Users (but focusing on providers context) */}
+                        <div className="bg-gradient-to-r from-pink-50 to-rose-50 p-6 rounded-3xl border border-pink-100 mb-6">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-pink-600 shadow-sm">
+                                    <Instagram size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-pink-900">Vinculá tu Instagram</h3>
+                                    <p className="text-xs text-pink-600/80">Para mostrar tus trabajos o verificar identidad</p>
+                                </div>
+                            </div>
+                            <div className="relative">
+                                <span className="absolute left-4 top-3.5 text-slate-400 font-bold select-none">@</span>
+                                <input
+                                    type="text"
+                                    value={instagramHandle}
+                                    onChange={(e) => {
+                                        // Remove @ if user types it
+                                        const val = e.target.value.replace('@', '');
+                                        setInstagramHandle(val);
+                                    }}
+                                    placeholder="usuario_instagram"
+                                    className="w-full pl-9 pr-4 py-3 bg-white rounded-2xl border border-pink-200 focus:border-pink-500 focus:shadow-md outline-none transition-all text-slate-700 font-medium"
+                                />
+                            </div>
+                        </div>
+
                         {/* Fields for Providers */}
                         {profile?.role === 'prestador' && (
                             <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100 mb-6 space-y-6">

@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { PlusCircle, List, MessageSquare, User, Settings, Briefcase, Activity, TrendingUp, LogOut, Home, Star } from 'lucide-react';
+import { PlusCircle, List, MessageSquare, User, Settings, Briefcase, Activity, TrendingUp, LogOut, Home, Star, ShieldCheck, BadgeCheck } from 'lucide-react';
 import NotificationBadge from '@/components/NotificationBadge';
 import JobsBadge from '@/components/JobsBadge';
 
@@ -27,6 +27,7 @@ export default async function DashboardPage() {
         { name: 'Contrataciones', icon: Activity, href: '/dashboard/my-hires' },
         ...(isPrestador ? [{ name: 'Trabajos', icon: Briefcase, href: '/dashboard/my-jobs', badge: true }] : []),
         { name: 'Publicaciones', icon: List, href: '/dashboard/my-services' },
+        { name: 'Insignias', icon: ShieldCheck, href: '/dashboard/badges' }, // DEBUG: Link temporal para verificar cambios
         { name: 'Mensajes', icon: MessageSquare, href: '/dashboard/messages', notification: true },
         ...(isPrestador ? [{ name: 'Reputación', icon: TrendingUp, href: '/dashboard/reputation' }] : []),
         { name: 'Configuración', icon: Settings, href: '/dashboard/settings' },
@@ -83,35 +84,86 @@ export default async function DashboardPage() {
 
                         {/* Profile Completion Warning */}
                         {isPrestador && (
-                            (() => {
-                                const isBusiness = profile?.provider_type === 'business';
-                                const missingBusiness = isBusiness && (!profile?.cuit || !profile?.fiscal_address || !profile?.legal_name);
-                                const missingIndependent = !isBusiness && (!profile?.bio || !profile?.phone); // Phone is usually required in signup but good to double check
+                            <div className="mb-10 space-y-6">
+                                {/* Trust & Verification Status */}
+                                <div className="bg-white rounded-[32px] p-8 border border-slate-100 shadow-sm">
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600">
+                                            <ShieldCheck size={24} />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-black text-slate-900">Estado de Verificación</h3>
+                                            <p className="text-slate-500 text-sm">Tus insignias de confianza visibles para clientes</p>
+                                        </div>
+                                    </div>
 
-                                if (missingBusiness || missingIndependent) {
-                                    return (
-                                        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-10 flex items-start gap-4 shadow-sm">
-                                            <div className="p-3 bg-amber-100 rounded-xl text-amber-600">
-                                                <Settings size={24} />
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        {/* Identity Badge Status */}
+                                        <div className={`p-4 rounded-2xl border flex items-center gap-4 ${profile?.is_identity_verified ? 'bg-emerald-50 border-emerald-100' : 'bg-slate-50 border-slate-100 opacity-70'}`}>
+                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${profile?.is_identity_verified ? 'bg-emerald-200 text-emerald-700' : 'bg-slate-200 text-slate-400'}`}>
+                                                <ShieldCheck size={20} />
                                             </div>
-                                            <div className="flex-1">
-                                                <h3 className="text-lg font-bold text-amber-900 mb-1">
-                                                    ⚠️ Tu perfil está incompleto
-                                                </h3>
-                                                <p className="text-amber-700 text-sm mb-4">
-                                                    {isBusiness
-                                                        ? "Para poder publicar servicios, necesitamos que completes tu Documentación Legal (CUIT, Dirección Fiscal, Razón Social)."
-                                                        : "Para destacar más, te recomendamos completar tu Bio y asegurar que tus datos de contacto estén actualizados."}
+                                            <div>
+                                                <p className={`font-bold ${profile?.is_identity_verified ? 'text-emerald-900' : 'text-slate-500'}`}>Identidad</p>
+                                                <p className="text-xs font-semibold uppercase tracking-wider mt-0.5">
+                                                    {profile?.is_identity_verified ? <span className="text-emerald-600">Verificado ✓</span> : <span className="text-slate-400">Sin verificar</span>}
                                                 </p>
-                                                <Link href="/dashboard/profile" className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition-colors text-sm">
-                                                    Completar Perfil ahora
-                                                </Link>
                                             </div>
                                         </div>
-                                    );
-                                }
-                                return null;
-                            })()
+
+                                        {/* Professional Badge Status */}
+                                        <div className={`p-4 rounded-2xl border flex items-center gap-4 ${profile?.is_professional_verified ? 'bg-amber-50 border-amber-100' : 'bg-slate-50 border-slate-100 opacity-70'}`}>
+                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${profile?.is_professional_verified ? 'bg-amber-200 text-amber-700' : 'bg-slate-200 text-slate-400'}`}>
+                                                <BadgeCheck size={20} />
+                                            </div>
+                                            <div>
+                                                <p className={`font-bold ${profile?.is_professional_verified ? 'text-amber-900' : 'text-slate-500'}`}>Profesional</p>
+                                                <p className="text-xs font-semibold uppercase tracking-wider mt-0.5">
+                                                    {profile?.is_professional_verified ? <span className="text-amber-600">Verificado ✓</span> : <span className="text-slate-400">Sin verificar</span>}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {!profile?.is_identity_verified && (
+                                        <div className="mt-4 pt-4 border-t border-slate-50">
+                                            <p className="text-xs text-slate-400 text-center">
+                                                Para verificar tu identidad, contactanos a <a href="mailto:soporte@altoque.com" className="text-indigo-600 font-bold hover:underline">soporte@altoque.com</a> enviando foto de tu DNI.
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {(() => {
+                                    const isBusiness = profile?.provider_type === 'business';
+                                    const missingBusiness = isBusiness && (!profile?.cuit || !profile?.fiscal_address || !profile?.legal_name);
+                                    const missingIndependent = !isBusiness && (!profile?.bio || !profile?.phone);
+
+                                    if (missingBusiness || missingIndependent) {
+                                        return (
+                                            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex items-start gap-4 shadow-sm">
+                                                <div className="p-3 bg-amber-100 rounded-xl text-amber-600">
+                                                    <Settings size={24} />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h3 className="text-lg font-bold text-amber-900 mb-1">
+                                                        ⚠️ Tu perfil está incompleto
+                                                    </h3>
+                                                    <p className="text-amber-700 text-sm mb-4">
+                                                        {isBusiness
+                                                            ? "Para poder publicar servicios, necesitamos que completes tu Documentación Legal (CUIT, Dirección Fiscal, Razón Social)."
+                                                            : "Para destacar más, te recomendamos completar tu Bio y asegurar que tus datos de contacto estén actualizados."}
+                                                    </p>
+                                                    <Link href="/dashboard/profile" className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition-colors text-sm">
+                                                        Completar Perfil ahora
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+                                    return null;
+                                })()}
+                            </div>
                         )}
 
                         {/* Quick Actions */}

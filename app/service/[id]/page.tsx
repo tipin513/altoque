@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import MessageModal from '@/components/MessageModal';
 import HireModal from '@/components/HireModal';
+import TrustBadge from '@/components/TrustBadge';
 
 export default function ServiceDetailPage({ params }: { params: any }) {
     const [service, setService] = useState<any>(null);
@@ -302,9 +303,22 @@ export default function ServiceDetailPage({ params }: { params: any }) {
                                 </div>
                                 <div className="space-y-1">
                                     <p className="font-black text-slate-900 text-lg leading-none">{service.profiles?.full_name}</p>
-                                    <div className="flex items-center gap-1 text-emerald-600">
-                                        <CheckCircle2 size={14} />
-                                        <span className="text-xs font-black uppercase tracking-widest">Verificado</span>
+
+                                    <div className="flex flex-col gap-1 mt-1">
+                                        {(service.profiles?.is_identity_verified || service.profiles?.is_professional_verified) ? (
+                                            <>
+                                                {service.profiles?.is_identity_verified && (
+                                                    <TrustBadge type="identity" showLabel={true} />
+                                                )}
+                                                {service.profiles?.is_professional_verified && (
+                                                    <TrustBadge type="professional" showLabel={true} />
+                                                )}
+                                            </>
+                                        ) : (
+                                            <div className="flex items-center gap-1 text-slate-400">
+                                                <span className="text-xs font-medium">Perfil no verificado</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

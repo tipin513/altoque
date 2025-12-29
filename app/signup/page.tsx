@@ -68,10 +68,14 @@ export default function SignupPage() {
             return;
         }
 
-        // Update profile with additional fields
+        // Update or Insert profile with additional fields
         if (authData.user) {
             const updateData: any = {
-                location_id: locationId ? parseInt(locationId) : null
+                id: authData.user.id,
+                full_name: fullName,
+                role: role,
+                location_id: locationId ? parseInt(locationId) : null,
+                email: email
             };
 
             // Add business fields for providers
@@ -84,15 +88,15 @@ export default function SignupPage() {
                 updateData.phone = phone;
             }
 
+            // Upsert ensures we save the data even if trigger verification is pending
             const { error: profileError } = await supabase
                 .from('profiles')
-                .update(updateData)
-                .eq('id', authData.user.id);
+                .upsert(updateData);
 
             if (profileError) {
                 console.error('Error updating profile:', profileError);
-                // We don't block registration success but we log it. 
-                // Alternatively, we could show error. For now logging is better than silence.
+                // Alert the user so they know something failed
+                alert(`Error al guardar datos del perfil: ${profileError.message}`);
             }
         }
 

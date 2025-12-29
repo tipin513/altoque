@@ -27,6 +27,11 @@ export default function ProfilePage() {
     const [website, setWebsite] = useState('');
     const [businessHours, setBusinessHours] = useState('');
     const [yearsInBusiness, setYearsInBusiness] = useState('');
+    // Business Legal fields
+    const [cuit, setCuit] = useState('');
+    const [fiscalAddress, setFiscalAddress] = useState('');
+    const [legalDocsUrl, setLegalDocsUrl] = useState('');
+    const [certificatesUrl, setCertificatesUrl] = useState('');
 
     // Independent fields
     const [providerType, setProviderType] = useState<'independent' | 'business'>('independent');
@@ -47,6 +52,10 @@ export default function ProfilePage() {
         website: '',
         businessHours: '',
         yearsInBusiness: '',
+        cuit: '',
+        fiscalAddress: '',
+        legalDocsUrl: '',
+        certificatesUrl: '',
         bio: '',
         workMode: 'solo'
     });
@@ -78,6 +87,10 @@ export default function ProfilePage() {
                 const websiteVal = profileData.website || '';
                 const businessHoursVal = profileData.business_hours || '';
                 const yearsVal = profileData.years_in_business?.toString() || '';
+                const cuitVal = profileData.cuit || '';
+                const fiscalAddressVal = profileData.fiscal_address || '';
+                const legalDocsVal = profileData.legal_docs_url || '';
+                const certificatesVal = profileData.certificates_url || '';
 
                 // Independent vals
                 const providerTypeVal = profileData.provider_type || 'independent';
@@ -95,6 +108,11 @@ export default function ProfilePage() {
                 setBusinessHours(businessHoursVal);
                 setYearsInBusiness(yearsVal);
 
+                setCuit(cuitVal);
+                setFiscalAddress(fiscalAddressVal);
+                setLegalDocsUrl(legalDocsVal);
+                setCertificatesUrl(certificatesVal);
+
                 setProviderType(providerTypeVal);
                 setBio(bioVal);
                 setWorkMode(workModeVal);
@@ -110,6 +128,10 @@ export default function ProfilePage() {
                     website: websiteVal,
                     businessHours: businessHoursVal,
                     yearsInBusiness: yearsVal,
+                    cuit: cuitVal,
+                    fiscalAddress: fiscalAddressVal,
+                    legalDocsUrl: legalDocsVal,
+                    certificatesUrl: certificatesVal,
                     bio: bioVal,
                     workMode: workModeVal
                 });
@@ -140,11 +162,15 @@ export default function ProfilePage() {
             website !== originalValues.website ||
             businessHours !== originalValues.businessHours ||
             yearsInBusiness !== originalValues.yearsInBusiness ||
+            cuit !== originalValues.cuit ||
+            fiscalAddress !== originalValues.fiscalAddress ||
+            legalDocsUrl !== originalValues.legalDocsUrl ||
+            certificatesUrl !== originalValues.certificatesUrl ||
             bio !== originalValues.bio ||
             workMode !== originalValues.workMode;
 
         setHasChanges(changed);
-    }, [phone, locationId, address, servicePreferences, businessName, legalName, website, businessHours, yearsInBusiness, bio, workMode, originalValues]);
+    }, [phone, locationId, address, servicePreferences, businessName, legalName, website, businessHours, yearsInBusiness, bio, workMode, cuit, fiscalAddress, legalDocsUrl, certificatesUrl, originalValues]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -174,6 +200,11 @@ export default function ProfilePage() {
                 updateData.website = website;
                 updateData.business_hours = businessHours;
                 updateData.years_in_business = yearsInBusiness ? parseInt(yearsInBusiness) : null;
+                updateData.cuit = cuit;
+                updateData.fiscal_address = fiscalAddress;
+                // Docs URLs would ideally be handled by file upload logic, but saving strings for now
+                updateData.legal_docs_url = legalDocsUrl;
+                updateData.certificates_url = certificatesUrl;
             } else {
                 // Independent fields
                 updateData.bio = bio;
@@ -205,6 +236,10 @@ export default function ProfilePage() {
                 website,
                 businessHours,
                 yearsInBusiness,
+                cuit,
+                fiscalAddress,
+                legalDocsUrl,
+                certificatesUrl,
                 bio,
                 workMode
             });
@@ -366,15 +401,76 @@ export default function ProfilePage() {
                                             </div>
                                             <div>
                                                 <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
-                                                    Razón Social
+                                                    Razón Social <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
                                                     value={legalName}
                                                     onChange={(e) => setLegalName(e.target.value)}
-                                                    placeholder="Nombre legal (opcional)"
+                                                    placeholder="Nombre legal completo"
                                                     className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
                                                 />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                                    CUIT <span className="text-red-500">*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={cuit}
+                                                    onChange={(e) => setCuit(e.target.value)}
+                                                    placeholder="20-12345678-9"
+                                                    className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-black text-slate-700 uppercase tracking-widest mb-3">
+                                                    Dirección Fiscal <span className="text-red-500">*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={fiscalAddress}
+                                                    onChange={(e) => setFiscalAddress(e.target.value)}
+                                                    placeholder="Calle, Número, Localidad"
+                                                    className="w-full px-4 py-3 bg-white rounded-2xl border border-indigo-100 focus:border-indigo-500 focus:shadow-md outline-none transition-all"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                                            <h4 className="font-bold text-amber-900 mb-3 flex items-center gap-2">
+                                                <span className="text-lg">⚖️</span> Documentación Obligatoria
+                                            </h4>
+                                            <div className="grid md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">
+                                                        Documentación Legal
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={legalDocsUrl}
+                                                        onChange={(e) => setLegalDocsUrl(e.target.value)}
+                                                        placeholder="Link a carpeta Drive/Dropbox"
+                                                        className="w-full px-3 py-2 bg-white rounded-xl border border-amber-200 focus:border-amber-500 outline-none text-sm"
+                                                    />
+                                                    <p className="text-[10px] text-amber-700 mt-1">Estatuto, constancia de inscripción, etc.</p>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">
+                                                        Certificados / Habilitaciones
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={certificatesUrl}
+                                                        onChange={(e) => setCertificatesUrl(e.target.value)}
+                                                        placeholder="Link a certificados"
+                                                        className="w-full px-3 py-2 bg-white rounded-xl border border-amber-200 focus:border-amber-500 outline-none text-sm"
+                                                    />
+                                                    <p className="text-[10px] text-amber-700 mt-1">Matrículas, habilitaciones municipales.</p>
+                                                </div>
                                             </div>
                                         </div>
 

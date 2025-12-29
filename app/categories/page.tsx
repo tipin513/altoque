@@ -105,10 +105,11 @@ export default async function CategoriesPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        const IconComponent = ICON_MAP[cat.slug] || Layout;
+                    {CATEGORIES.map((cat) => {
+                        const IconComponent = cat.icon || Layout;
                         return (
                             <Link
-                                key={cat.id}
+                                key={cat.slug}
                                 href={`/ search ? category = ${ cat.slug } `}
                                 className="group at-card p-8 border-none bg-white hover:ring-4 hover:ring-indigo-50 transition-all duration-500 block relative overflow-hidden"
                             >
@@ -118,7 +119,7 @@ export default async function CategoriesPage() {
                                 </div>
 
                                 <div className="relative z-10 space-y-6">
-                                    <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white group-hover:scale-110 transition-all duration-500 shadow-sm">
+                                    <div className={`w - 14 h - 14 rounded - 2xl flex items - center justify - center ${ cat.color } group - hover: scale - 110 transition - all duration - 500 shadow - sm`}>
                                         <IconComponent size={28} />
                                     </div>
 
@@ -126,7 +127,10 @@ export default async function CategoriesPage() {
                                         <h3 className="font-black text-slate-900 text-xl tracking-tight leading-tight group-hover:text-indigo-600 transition-colors">
                                             {cat.name}
                                         </h3>
-                                        <p className="text-sm text-slate-400 font-bold uppercase tracking-widest flex items-center gap-2">
+                                        <p className="text-sm text-slate-500 line-clamp-2">
+                                            {cat.description}
+                                        </p>
+                                        <p className="text-sm text-indigo-600 font-bold uppercase tracking-widest flex items-center gap-2 pt-2">
                                             <span>Explorar</span>
                                             <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                                         </p>

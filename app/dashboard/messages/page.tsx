@@ -48,7 +48,7 @@ export default function MessagesPage() {
 
 
     // Refs for scrolling
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         fetchUserAndConversations();
@@ -63,8 +63,11 @@ export default function MessagesPage() {
 
     // Scroll to bottom on new message
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+        if (messagesContainerRef.current) {
+            const container = messagesContainerRef.current;
+            container.scrollTop = container.scrollHeight;
+        }
+    }, [messages, activeConvId]);
 
     const fetchUserAndConversations = async () => {
         try {
@@ -134,6 +137,32 @@ export default function MessagesPage() {
             ));
         } catch (err) {
             console.error('Error marking as read:', err);
+        }
+    };
+
+    const markAllAsRead = async () => {
+        if (!user) return;
+        try {
+            // Update all unread messages sent by others
+            await supabase
+                .from('messages')
+                .update({ is_read: true })
+                .neq('sender_id', user.id)
+                .eq('is_read', false);
+
+            // Fetch conversations again to refresh UI/Badges if needed (though subscriptions handle some)
+            fetchUserAndConversations();
+
+            // Also update current view if active
+            if (activeConvId) {
+                setMessages(prev => prev.map(m =>
+                    (m.sender_id !== user.id && !m.is_read)
+                        ? { ...m, is_read: true }
+                        : m
+                ));
+            }
+        } catch (err) {
+            console.error('Error marking all as read', err);
         }
     };
 
@@ -226,8 +255,8 @@ export default function MessagesPage() {
         <div className="flex-1 h-full bg-white md:rounded-[32px] md:border md:border-slate-100 shadow-sm overflow-hidden flex flex-col md:flex-row">
             {/* Sidebar (List) */}
             <div className={`w-full md:w-80 border-r border-slate-100 flex flex-col ${activeConvId ? 'hidden md:flex' : 'flex'}`}>
-                <div className="p-6 border-b border-slate-50">
-                    <h2 className="text-xl font-black text-slate-900 mb-4">Mensajes</h2>
+                <div className="p-6 border-b border-slate-50 space-y-4">
+                    <h2 className="text-xl font-black text-slate-900">Mensajes</h2>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                         <input
@@ -236,6 +265,13 @@ export default function MessagesPage() {
                             className="w-full pl-10 pr-4 py-2 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
                         />
                     </div>
+                    <button
+                        onClick={markAllAsRead}
+                        className="w-full text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 py-2 rounded-lg transition-colors flex items-center justify-center gap-1"
+                    >
+                        <CheckCheck size={14} />
+                        Marcar todos como leídos
+                    </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-3 space-y-2">
@@ -262,7 +298,7 @@ export default function MessagesPage() {
                                             </div>
                                         )}
                                     </div>
-                                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+                                    {/* Simplified presence indicator logic possible here if real-time presence needed */}
                                 </div>
                                 <div className="text-left flex-1 min-w-0">
                                     <div className="flex justify-between items-baseline mb-1">
@@ -312,19 +348,14 @@ export default function MessagesPage() {
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => activeConvId && markAsRead(activeConvId)}
-                                    title="Marcar todo como leído"
-                                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors"
-                                >
-                                    <CheckCheck size={20} />
-                                </button>
-                            </div>
+                            {/* Simplified Header Actions */}
                         </div>
 
                         {/* Messages Feed */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                        <div
+                            ref={messagesContainerRef}
+                            className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth"
+                        >
                             {messages.map((msg, idx) => {
                                 const isMe = msg.sender_id === user.id;
                                 return (
@@ -346,7 +377,6 @@ export default function MessagesPage() {
                                     </div>
                                 );
                             })}
-                            <div ref={messagesEndRef} />
                         </div>
 
                         {/* Input Area */}

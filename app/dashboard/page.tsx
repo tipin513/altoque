@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import Link from 'next/link';
-import { PlusCircle, ShieldCheck } from 'lucide-react';
+import { PlusCircle, List, MessageSquare, Briefcase, Activity, Star, ShieldCheck, BadgeCheck, Settings } from 'lucide-react';
+import NotificationBadge from '@/components/NotificationBadge';
+import JobsBadge from '@/components/JobsBadge';
 
 export default async function DashboardPage() {
     const supabase = await createClient();
@@ -19,18 +20,6 @@ export default async function DashboardPage() {
         .single();
 
     const isPrestador = profile?.role === 'prestador';
-
-    const sidebarLinks = [
-        { name: 'Inicio', icon: Home, href: '/dashboard' },
-        { name: 'Perfil', icon: User, href: '/dashboard/profile' },
-        { name: 'Contrataciones', icon: Activity, href: '/dashboard/my-hires' },
-        ...(isPrestador ? [{ name: 'Trabajos', icon: Briefcase, href: '/dashboard/my-jobs', badge: true }] : []),
-        { name: 'Publicaciones', icon: List, href: '/dashboard/my-services' },
-        { name: 'Insignias', icon: ShieldCheck, href: '/dashboard/verification' }, // Updated link
-        { name: 'Mensajes', icon: MessageSquare, href: '/dashboard/messages', notification: true },
-        ...(isPrestador ? [{ name: 'Reputación', icon: TrendingUp, href: '/dashboard/reputation' }] : []),
-        { name: 'Configuración', icon: Settings, href: '/dashboard/settings' },
-    ];
 
     return (
         <div className="p-6 lg:p-12">
@@ -90,6 +79,11 @@ export default async function DashboardPage() {
                                     <p className="text-xs text-slate-400 text-center">
                                         Para verificar tu identidad, contactanos a <a href="mailto:soporte@altoque.com" className="text-indigo-600 font-bold hover:underline">soporte@altoque.com</a> enviando foto de tu DNI.
                                     </p>
+                                    <div className="mt-4 text-center">
+                                        <Link href="/dashboard/verification" className="inline-block px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-colors">
+                                            Ir al Centro de Verificación
+                                        </Link>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -239,8 +233,6 @@ export default async function DashboardPage() {
                     </div>
                 </div>
             </div>
-        </main>
-            </div >
-        </div >
+        </div>
     );
 }

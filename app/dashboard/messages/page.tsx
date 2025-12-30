@@ -223,6 +223,53 @@ export default function MessagesPage() {
         };
     };
 
+    // Global subscription for sidebar updates (new messages in ANY chat)
+    useEffect(() => {
+        if (!user) return;
+
+        const globalChannel = supabase
+            .channel(`global-messages-${user.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'messages'
+                },
+                async (payload) => {
+                    const newMsg = payload.new as Message;
+
+                    // We need to check if this message belongs to a conversation we are part of
+                    // Since RLS policies might already filter, we trust the payload but verify conversation logic
+
+                    setConversations(prev => {
+                        // Check if conversation exists in list
+                        const exists = prev.find(c => c.id === newMsg.conversation_id);
+
+                        if (exists) {
+                            // Update existing conversation
+                            const updated = prev.map(c =>
+                                c.id === newMsg.conversation_id
+                                    ? { ...c, last_message_at: newMsg.created_at }
+                                    : c
+                            );
+                            return updated.sort((a, b) => new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime());
+                        } else {
+                            // New conversation? We might need to fetch it or just ignore until refresh
+                            // For robustness, let's trigger a refetch of conversations
+                            fetchUserAndConversations();
+                            return prev;
+                        }
+                    });
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(globalChannel);
+        };
+    }, [user]);
+
     const sendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newMessage.trim() || !activeConvId || !user) return;

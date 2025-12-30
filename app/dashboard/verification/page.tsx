@@ -174,24 +174,46 @@ export default function VerificationPage() {
                     {activeTab === 'identity' ? 'Verificar Identidad' : 'Verificar Título Profesional'}
                 </h2>
 
-                {currentStatus === 'verified' ? (
+                {/* Status Handling */}
+                {currentStatus === 'verified' && (
                     <div className="bg-emerald-50 rounded-2xl p-8 text-center border border-emerald-100">
                         <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <CheckCircle size={32} />
                         </div>
                         <h3 className="text-xl font-black text-emerald-900 mb-2">¡Felicitaciones!</h3>
-                        <p className="text-emerald-700">Tu documentación ya fue verificada. Tu insignia está visible en tu perfil.</p>
+                        <p className="text-emerald-700 mb-6">Tu documentación ya fue verificada. Tu insignia está visible en tu perfil.</p>
+
+                        <div className="flex justify-center text-sm text-emerald-600 gap-1">
+                            <span>¿Necesitás actualizar tus documentos?</span>
+                            <a href="mailto:soporte@altoque.com" className="font-bold underline hover:text-emerald-800">Contactar a Soporte</a>
+                        </div>
                     </div>
-                ) : currentStatus === 'pending' ? (
+                )}
+
+                {currentStatus === 'pending' && (
                     <div className="bg-amber-50 rounded-2xl p-8 text-center border border-amber-100">
                         <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Clock size={32} />
                         </div>
                         <h3 className="text-xl font-black text-amber-900 mb-2">En Revisión</h3>
-                        <p className="text-amber-700">Recibimos tus documentos. Te notificaremos cuando la revisión esté completa (24-48hs).</p>
+                        <p className="text-amber-700 mb-6">Recibimos tus documentos. Te notificaremos cuando la revisión esté completa (24-48hs).</p>
+                        <p className="text-xs text-amber-600 italic">No podés subir nuevos documentos mientras la revisión está en curso.</p>
                     </div>
-                ) : (
+                )}
+
+                {/* Upload Area - Only visible if Unverified or Rejected */}
+                {(currentStatus === 'unverified' || currentStatus === 'rejected' || !currentStatus) && (
                     <div className="space-y-6">
+                        {currentStatus === 'rejected' && (
+                            <div className="bg-rose-50 p-4 rounded-xl border border-rose-100 flex gap-3 text-rose-700 text-sm">
+                                <AlertCircle className="flex-shrink-0" size={20} />
+                                <div>
+                                    <p className="font-bold">Tu solicitud fue rechazada.</p>
+                                    <p>Por favor revisá que las fotos sean legibles y correspondan a lo solicitado, y volvé a intentarlo.</p>
+                                </div>
+                            </div>
+                        )}
+
                         <p className="text-slate-600 leading-relaxed">
                             {activeTab === 'identity'
                                 ? 'Para obtener la insignia de Identidad Verificada, por favor subí una foto clara del frente y dorso de tu DNI.'

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Search, Send, MoreVertical, Phone, Video, Image as ImageIcon, Paperclip, ArrowLeft, MessageSquare } from 'lucide-react';
+import { Search, Send, MoreVertical, Phone, Video, Image as ImageIcon, Paperclip, ArrowLeft, MessageSquare, CheckCheck } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -115,6 +115,28 @@ export default function MessagesPage() {
         }
     };
 
+    const markAsRead = async (convId: string) => {
+        if (!user) return;
+
+        try {
+            await supabase
+                .from('messages')
+                .update({ is_read: true })
+                .eq('conversation_id', convId)
+                .neq('sender_id', user.id)
+                .eq('is_read', false);
+
+            // Optimistic update
+            setMessages(prev => prev.map(m =>
+                (m.conversation_id === convId && m.sender_id !== user.id && !m.is_read)
+                    ? { ...m, is_read: true }
+                    : m
+            ));
+        } catch (err) {
+            console.error('Error marking as read:', err);
+        }
+    };
+
     const fetchMessages = async (convId: string) => {
         setLoadingMessages(true);
         try {
@@ -126,6 +148,9 @@ export default function MessagesPage() {
 
             if (error) throw error;
             setMessages(data || []);
+
+            // Mark as read immediately when loading
+            markAsRead(convId);
         } catch (error) {
             console.error('Error fetching messages:', error);
         } finally {
@@ -147,6 +172,11 @@ export default function MessagesPage() {
                 (payload) => {
                     const newMsg = payload.new as Message;
                     setMessages((prev) => [...prev, newMsg]);
+
+                    // If it's from the other person and we are looking at it, mark read
+                    if (newMsg.sender_id !== user?.id) {
+                        markAsRead(convId);
+                    }
 
                     // Update conversation list last message time
                     setConversations(prev => {
@@ -283,6 +313,13 @@ export default function MessagesPage() {
                                 </div>
                             </div>
                             <div className="flex gap-2">
+                                <button
+                                    onClick={() => activeConvId && markAsRead(activeConvId)}
+                                    title="Marcar todo como leído"
+                                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors"
+                                >
+                                    <CheckCheck size={20} />
+                                </button>
                                 <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors">
                                     <Phone size={20} />
                                 </button>
@@ -306,9 +343,14 @@ export default function MessagesPage() {
                                             : 'bg-white text-slate-700 rounded-tl-none border border-slate-100'
                                             }`}>
                                             <p className="text-sm leading-relaxed">{msg.content}</p>
-                                            <p className={`text-[10px] mt-1 text-right ${isMe ? 'text-indigo-200' : 'text-slate-400'}`}>
-                                                {format(new Date(msg.created_at), 'HH:mm')}
-                                            </p>
+                                            <div className={`flex items-center justify-end gap-1 mt-1 ${isMe ? 'text-indigo-200' : 'text-slate-400'}`}>
+                                                <p className="text-[10px]">
+                                                    {format(new Date(msg.created_at), 'HH:mm')}
+                                                </p>
+                                                {isMe && (
+                                                    <CheckCheck size={14} className={msg.is_read ? 'text-indigo-300' : 'text-indigo-400/50'} />
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 );

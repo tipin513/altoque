@@ -195,15 +195,13 @@ export default function AdminVerifications() {
                         </div>
                     ))}
                 </div>
-                </div>
-    )
-}
+            )}
 
-{/* Debug Block */ }
-<div className="mt-8 p-4 bg-slate-100 rounded text-xs font-mono overflow-auto border border-slate-300">
-    <p className="font-bold mb-2">Debug Info:</p>
-    <pre>{JSON.stringify(debug, null, 2)}</pre>
-</div>
+            {/* Debug Block */}
+            <div className="mt-8 p-4 bg-slate-100 rounded text-xs font-mono overflow-auto border border-slate-300">
+                <p className="font-bold mb-2">Debug Info:</p>
+                <pre>{JSON.stringify(debug, null, 2)}</pre>
+            </div>
         </div >
     );
 }

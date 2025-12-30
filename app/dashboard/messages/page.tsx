@@ -7,6 +7,7 @@ import { es } from 'date-fns/locale';
 import { Search, Send, MoreVertical, Phone, Video, Image as ImageIcon, Paperclip, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 // Types
 type Profile = {
@@ -43,6 +44,8 @@ export default function MessagesPage() {
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [loadingMessages, setLoadingMessages] = useState(false);
+    const searchParams = useSearchParams();
+
 
     // Refs for scrolling
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -93,8 +96,14 @@ export default function MessagesPage() {
 
             setConversations(formattedConvs);
 
-            // Allow selecting conversation via URL param ?chat=ID (optional future enhancement)
-            if (formattedConvs.length > 0 && !activeConvId) {
+            // Allow selecting conversation via URL param ?chat=ID
+            const chatIdFromUrl = searchParams.get('chat');
+            if (chatIdFromUrl) {
+                const exists = formattedConvs.find((c: any) => c.id === chatIdFromUrl);
+                if (exists) {
+                    setActiveConvId(chatIdFromUrl);
+                }
+            } else if (formattedConvs.length > 0 && !activeConvId) {
                 // Optional: Auto-select first chat
                 // setActiveConvId(formattedConvs[0].id);
             }
@@ -293,8 +302,8 @@ export default function MessagesPage() {
                                 return (
                                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                                         <div className={`max-w-[75%] rounded-2xl px-5 py-3 shadow-sm ${isMe
-                                                ? 'bg-indigo-600 text-white rounded-tr-none'
-                                                : 'bg-white text-slate-700 rounded-tl-none border border-slate-100'
+                                            ? 'bg-indigo-600 text-white rounded-tr-none'
+                                            : 'bg-white text-slate-700 rounded-tl-none border border-slate-100'
                                             }`}>
                                             <p className="text-sm leading-relaxed">{msg.content}</p>
                                             <p className={`text-[10px] mt-1 text-right ${isMe ? 'text-indigo-200' : 'text-slate-400'}`}>

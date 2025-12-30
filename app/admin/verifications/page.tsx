@@ -62,7 +62,7 @@ export default function AdminVerifications() {
             setRequests(requestsWithUrls);
         } catch (error: any) {
             console.error('Error fetching requests:', error);
-            setDebug(prev => ({ ...prev, catch_error: error.message }));
+            setDebug((prev: any) => ({ ...prev, catch_error: error.message }));
         } finally {
             setLoading(false);
         }

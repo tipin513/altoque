@@ -202,6 +202,7 @@ export default function ServiceDetailPage({ params }: { params: any }) {
                                         >
                                             Contratar servicio
                                         </button>
+
                                         <ContactButton
                                             providerId={service.user_id}
                                             providerName={service.profiles?.full_name || 'Prestador'}
@@ -217,189 +218,190 @@ export default function ServiceDetailPage({ params }: { params: any }) {
                                         />
                                     </div>
                                 </div>
+                            </div>
 
-                                <div className="mt-16 pt-16 border-t border-slate-100">
-                                    <h2 className="text-2xl font-black text-slate-900 mb-6 tracking-tight">Sobre el servicio</h2>
-                                    <div className="text-slate-600 text-lg leading-relaxed whitespace-pre-wrap font-light">
-                                        {service.description}
+                            <div className="mt-16 pt-16 border-t border-slate-100">
+                                <h2 className="text-2xl font-black text-slate-900 mb-6 tracking-tight">Sobre el servicio</h2>
+                                <div className="text-slate-600 text-lg leading-relaxed whitespace-pre-wrap font-light">
+                                    {service.description}
+                                </div>
+                            </div>
+
+                            {/* Reviews Section */}
+                            <div className="mt-16 pt-16 border-t border-slate-100">
+                                <div className="flex items-center justify-between mb-8">
+                                    <h2 className="text-2xl font-black text-slate-900 tracking-tight">Opiniones de clientes</h2>
+                                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-2xl border border-slate-100">
+                                        <Star size={20} fill="currentColor" className="text-amber-400" />
+                                        <span className="text-xl font-black text-slate-900">{service.rating?.toFixed(1) || '0.0'}</span>
+                                        <span className="text-slate-400 font-bold">/ 5</span>
                                     </div>
                                 </div>
 
-                                {/* Reviews Section */}
-                                <div className="mt-16 pt-16 border-t border-slate-100">
-                                    <div className="flex items-center justify-between mb-8">
-                                        <h2 className="text-2xl font-black text-slate-900 tracking-tight">Opiniones de clientes</h2>
-                                        <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-2xl border border-slate-100">
-                                            <Star size={20} fill="currentColor" className="text-amber-400" />
-                                            <span className="text-xl font-black text-slate-900">{service.rating?.toFixed(1) || '0.0'}</span>
-                                            <span className="text-slate-400 font-bold">/ 5</span>
-                                        </div>
-                                    </div>
-
-                                    {reviews.length > 0 ? (
-                                        <div className="space-y-6">
-                                            {reviews.map((review) => (
-                                                <div key={review.id} className="p-6 bg-slate-50/50 rounded-[32px] border border-slate-100 flex flex-col md:flex-row gap-6">
-                                                    <div className="flex-shrink-0">
-                                                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-300 shadow-sm border border-slate-100">
-                                                            {review.profiles?.avatar_url ? (
-                                                                <img src={review.profiles.avatar_url} className="w-full h-full rounded-2xl object-cover" />
-                                                            ) : (
-                                                                <User size={24} />
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex-grow space-y-2">
-                                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                                                            <p className="font-black text-slate-800">{review.profiles?.full_name}</p>
-                                                            <div className="flex gap-0.5">
-                                                                {[1, 2, 3, 4, 5].map(i => (
-                                                                    <Star
-                                                                        key={i}
-                                                                        size={14}
-                                                                        fill={i <= review.rating ? "currentColor" : "none"}
-                                                                        className={i <= review.rating ? "text-amber-400" : "text-slate-100"}
-                                                                    />
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                        <p className="text-slate-600 leading-relaxed font-light">{review.comment}</p>
-
-                                                        {/* Review Photos */}
-                                                        {review.photos && review.photos.length > 0 && (
-                                                            <div className="flex gap-2 mt-3">
-                                                                {review.photos.map((photo: string, idx: number) => (
-                                                                    <div key={idx} className="w-20 h-20 rounded-xl overflow-hidden border border-slate-200 cursor-pointer hover:opacity-90 transition-opacity">
-                                                                        <img
-                                                                            src={photo}
-                                                                            alt={`Foto reseña ${idx + 1}`}
-                                                                            className="w-full h-full object-cover"
-                                                                            onClick={() => window.open(photo, '_blank')}
-                                                                        />
-                                                                    </div>
-                                                                ))}
-                                                            </div>
+                                {reviews.length > 0 ? (
+                                    <div className="space-y-6">
+                                        {reviews.map((review) => (
+                                            <div key={review.id} className="p-6 bg-slate-50/50 rounded-[32px] border border-slate-100 flex flex-col md:flex-row gap-6">
+                                                <div className="flex-shrink-0">
+                                                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-300 shadow-sm border border-slate-100">
+                                                        {review.profiles?.avatar_url ? (
+                                                            <img src={review.profiles.avatar_url} className="w-full h-full rounded-2xl object-cover" />
+                                                        ) : (
+                                                            <User size={24} />
                                                         )}
-
-                                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pt-2">
-                                                            {format(new Date(review.created_at), "d 'de' MMMM, yyyy", { locale: es })}
-                                                        </p>
                                                     </div>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="text-center py-12 bg-slate-50/50 rounded-[32px] border border-slate-100/50">
-                                            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Aún no hay opiniones para este servicio</p>
-                                        </div>
-                                    )}
+                                                <div className="flex-grow space-y-2">
+                                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                                        <p className="font-black text-slate-800">{review.profiles?.full_name}</p>
+                                                        <div className="flex gap-0.5">
+                                                            {[1, 2, 3, 4, 5].map(i => (
+                                                                <Star
+                                                                    key={i}
+                                                                    size={14}
+                                                                    fill={i <= review.rating ? "currentColor" : "none"}
+                                                                    className={i <= review.rating ? "text-amber-400" : "text-slate-100"}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-slate-600 leading-relaxed font-light">{review.comment}</p>
+
+                                                    {/* Review Photos */}
+                                                    {review.photos && review.photos.length > 0 && (
+                                                        <div className="flex gap-2 mt-3">
+                                                            {review.photos.map((photo: string, idx: number) => (
+                                                                <div key={idx} className="w-20 h-20 rounded-xl overflow-hidden border border-slate-200 cursor-pointer hover:opacity-90 transition-opacity">
+                                                                    <img
+                                                                        src={photo}
+                                                                        alt={`Foto reseña ${idx + 1}`}
+                                                                        className="w-full h-full object-cover"
+                                                                        onClick={() => window.open(photo, '_blank')}
+                                                                    />
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+
+                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pt-2">
+                                                        {format(new Date(review.created_at), "d 'de' MMMM, yyyy", { locale: es })}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-12 bg-slate-50/50 rounded-[32px] border border-slate-100/50">
+                                        <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Aún no hay opiniones para este servicio</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Lateral */}
+                    <aside className="w-full lg:w-96 space-y-6">
+                        {/* FICHA 1: Datos del prestador */}
+                        <div className="at-card p-8 space-y-8 border-none bg-white">
+                            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Datos del prestador</h3>
+
+                            <div className="flex items-center gap-5">
+                                <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center text-slate-400">
+                                    <User size={32} />
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="font-black text-slate-900 text-lg leading-none">{service.profiles?.full_name}</p>
+
+                                    <div className="flex flex-col gap-1 mt-1">
+                                        {(service.profiles?.is_identity_verified || service.profiles?.is_professional_verified) ? (
+                                            <>
+                                                {service.profiles?.is_identity_verified && (
+                                                    <TrustBadge type="identity" showLabel={true} />
+                                                )}
+                                                {service.profiles?.is_professional_verified && (
+                                                    <TrustBadge type="professional" showLabel={true} />
+                                                )}
+                                            </>
+                                        ) : (
+                                            <div className="flex items-center gap-1 text-slate-400">
+                                                <span className="text-xs font-medium">Perfil no verificado</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4 pt-4 border-t border-slate-50">
+                                <div className="flex items-center gap-3 text-slate-500 font-medium">
+                                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+                                        <MapPin size={18} />
+                                    </div>
+                                    <div>
+                                        <span className="font-bold">{service.locations?.city}</span>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{service.locations?.province}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 text-slate-500 font-medium">
+                                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+                                        <Clock size={18} />
+                                    </div>
+                                    <span>Atención inmediata</span>
+                                </div>
+                            </div>
+
+                            <div className="p-5 bg-indigo-50/50 rounded-2xl border border-indigo-50">
+                                <div className="flex gap-3">
+                                    <ShieldCheck className="text-indigo-600 flex-shrink-0" size={24} />
+                                    <div>
+                                        <p className="text-sm font-bold text-indigo-900">Servicio Asegurado</p>
+                                        <p className="text-xs text-indigo-800/70 mt-1">Tu contratación está protegida por nuestra garantía de satisfacción.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Lateral */}
-                        <aside className="w-full lg:w-96 space-y-6">
-                            {/* FICHA 1: Datos del prestador */}
-                            <div className="at-card p-8 space-y-8 border-none bg-white">
-                                <h3 className="text-xl font-bold text-slate-900 tracking-tight">Datos del prestador</h3>
-
-                                <div className="flex items-center gap-5">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center text-slate-400">
-                                        <User size={32} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <p className="font-black text-slate-900 text-lg leading-none">{service.profiles?.full_name}</p>
-
-                                        <div className="flex flex-col gap-1 mt-1">
-                                            {(service.profiles?.is_identity_verified || service.profiles?.is_professional_verified) ? (
-                                                <>
-                                                    {service.profiles?.is_identity_verified && (
-                                                        <TrustBadge type="identity" showLabel={true} />
-                                                    )}
-                                                    {service.profiles?.is_professional_verified && (
-                                                        <TrustBadge type="professional" showLabel={true} />
-                                                    )}
-                                                </>
-                                            ) : (
-                                                <div className="flex items-center gap-1 text-slate-400">
-                                                    <span className="text-xs font-medium">Perfil no verificado</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
+                        {/* FICHA 2: Ubicación y Cobertura (Relocalizada) */}
+                        <div className="at-card p-8 space-y-6 border-none bg-white">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-100">
+                                    <MapIcon size={20} />
                                 </div>
-
-                                <div className="space-y-4 pt-4 border-t border-slate-50">
-                                    <div className="flex items-center gap-3 text-slate-500 font-medium">
-                                        <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
-                                            <MapPin size={18} />
-                                        </div>
-                                        <div>
-                                            <span className="font-bold">{service.locations?.city}</span>
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{service.locations?.province}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 text-slate-500 font-medium">
-                                        <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
-                                            <Clock size={18} />
-                                        </div>
-                                        <span>Atención inmediata</span>
-                                    </div>
-                                </div>
-
-                                <div className="p-5 bg-indigo-50/50 rounded-2xl border border-indigo-50">
-                                    <div className="flex gap-3">
-                                        <ShieldCheck className="text-indigo-600 flex-shrink-0" size={24} />
-                                        <div>
-                                            <p className="text-sm font-bold text-indigo-900">Servicio Asegurado</p>
-                                            <p className="text-xs text-indigo-800/70 mt-1">Tu contratación está protegida por nuestra garantía de satisfacción.</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 tracking-tight">Ubicación y Cobertura</h3>
                             </div>
 
-                            {/* FICHA 2: Ubicación y Cobertura (Relocalizada) */}
-                            <div className="at-card p-8 space-y-6 border-none bg-white">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-100">
-                                        <MapIcon size={20} />
+                            <div className="space-y-6">
+                                <div>
+                                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Sede principal</p>
+                                    <div className="flex items-center gap-3 text-slate-700">
+                                        <MapPin size={18} className="text-indigo-500" />
+                                        <p className="font-bold">{service.locations?.city}</p>
                                     </div>
-                                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">Ubicación y Cobertura</h3>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <div>
-                                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Sede principal</p>
-                                        <div className="flex items-center gap-3 text-slate-700">
-                                            <MapPin size={18} className="text-indigo-500" />
-                                            <p className="font-bold">{service.locations?.city}</p>
+                                {otherAreas.length > 0 && (
+                                    <div className="pt-6 border-t border-slate-50">
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <Globe size={14} className="text-indigo-600" />
+                                            <p className="text-xs font-black text-indigo-600 uppercase tracking-widest">Zonas de atención extra</p>
                                         </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {otherAreas.map((area: string, idx: number) => (
+                                                <span key={idx} className="bg-indigo-50/50 px-3 py-1.5 rounded-xl text-[11px] font-bold text-indigo-700 border border-indigo-100 flex items-center gap-2 hover:bg-indigo-600 hover:text-white transition-all cursor-default group">
+                                                    <div className="w-1 h-1 rounded-full bg-indigo-400 group-hover:bg-white transition-colors"></div>
+                                                    {area}
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <p className="text-[10px] text-slate-400 mt-4 italic font-medium leading-tight">
+                                            Este profesional se desplaza a estas localidades.
+                                        </p>
                                     </div>
-
-                                    {otherAreas.length > 0 && (
-                                        <div className="pt-6 border-t border-slate-50">
-                                            <div className="flex items-center gap-2 mb-4">
-                                                <Globe size={14} className="text-indigo-600" />
-                                                <p className="text-xs font-black text-indigo-600 uppercase tracking-widest">Zonas de atención extra</p>
-                                            </div>
-                                            <div className="flex flex-wrap gap-2">
-                                                {otherAreas.map((area: string, idx: number) => (
-                                                    <span key={idx} className="bg-indigo-50/50 px-3 py-1.5 rounded-xl text-[11px] font-bold text-indigo-700 border border-indigo-100 flex items-center gap-2 hover:bg-indigo-600 hover:text-white transition-all cursor-default group">
-                                                        <div className="w-1 h-1 rounded-full bg-indigo-400 group-hover:bg-white transition-colors"></div>
-                                                        {area}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                            <p className="text-[10px] text-slate-400 mt-4 italic font-medium leading-tight">
-                                                Este profesional se desplaza a estas localidades.
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
+                                )}
                             </div>
-                        </aside>
-                    </div>
+                        </div>
+                    </aside>
                 </div>
             </div>
-            );
+        </div>
+    );
 }

@@ -8,6 +8,9 @@ import { es } from 'date-fns/locale';
 
 export default function AdminVerifications() {
     const supabase = createClient();
+    const [requests, setRequests] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [processingId, setProcessingId] = useState<string | null>(null);
     const [debug, setDebug] = useState<any>(null);
 
     useEffect(() => {

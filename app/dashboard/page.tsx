@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { PlusCircle, List, MessageSquare, Briefcase, Activity, Star, ShieldCheck, BadgeCheck, Settings } from 'lucide-react';
+import { PlusCircle, List, MessageSquare, Briefcase, Activity, Star, ShieldCheck, BadgeCheck, Settings, User } from 'lucide-react';
 import NotificationBadge from '@/components/NotificationBadge';
 import JobsBadge from '@/components/JobsBadge';
 

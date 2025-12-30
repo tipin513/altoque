@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Search, Send, MoreVertical, Phone, Video, Image as ImageIcon, Paperclip, ArrowLeft } from 'lucide-react';
+import { Search, Send, MoreVertical, Phone, Video, Image as ImageIcon, Paperclip, ArrowLeft, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';

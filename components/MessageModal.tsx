@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Send, X, Loader2, MessageSquare } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -13,12 +13,26 @@ interface MessageModalProps {
     onClose: () => void;
 }
 
-export default function MessageModal({ serviceId, sellerId, serviceTitle, isOpen, onClose }: MessageModalProps) {
-    const [content, setContent] = useState('');
+export default function MessageModal({
+    serviceId,
+    sellerId,
+    serviceTitle,
+    isOpen,
+    onClose,
+    defaultText = ''
+}: MessageModalProps & { defaultText?: string }) {
+    const [content, setContent] = useState(defaultText);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
     const supabase = createClient();
     const router = useRouter();
+
+    useEffect(() => {
+        if (isOpen && defaultText) {
+            setContent(defaultText);
+        }
+    }, [isOpen, defaultText]);
 
     if (!isOpen) return null;
 
@@ -42,40 +56,76 @@ export default function MessageModal({ serviceId, sellerId, serviceTitle, isOpen
                 return;
             }
 
-            // 1. Get or create conversation
-            const { data: conversation, error: convError } = await supabase
+            // Normalize participants to ensure unique conversion find/create
+            const [p1, p2] = [user.id, sellerId].sort();
+
+            // 1. Get or create conversation (using correct schema p1/p2)
+            let conversationId;
+
+            const { data: existingConv } = await supabase
                 .from('conversations')
-                .upsert({
-                    service_id: serviceId,
-                    buyer_id: user.id,
-                    seller_id: sellerId
-                }, { onConflict: 'service_id, buyer_id, seller_id' })
-                .select()
+                .select('id')
+                .eq('participant1_id', p1)
+                .eq('participant2_id', p2)
                 .single();
 
-            if (convError) throw convError;
+            if (existingConv) {
+                conversationId = existingConv.id;
+            } else {
+                const { data: newConv, error: createError } = await supabase
+                    .from('conversations')
+                    .insert({
+                        participant1_id: p1,
+                        participant2_id: p2
+                    })
+                    .select()
+                    .single();
+
+                if (createError) throw createError;
+                conversationId = newConv.id;
+            }
 
             // 2. Insert message
             const { error: msgError } = await supabase
                 .from('messages')
                 .insert({
-                    conversation_id: conversation.id,
+                    conversation_id: conversationId,
                     sender_id: user.id,
                     content: content.trim()
                 });
 
             if (msgError) throw msgError;
 
-            onClose();
-            router.push('/dashboard/messages');
+            // Show success state
+            setSuccess(true);
+            setTimeout(() => {
+                setSuccess(false);
+                setContent('');
+                onClose();
+            }, 2000);
+
         } catch (err: any) {
             console.error('Error sending message:', err);
-            const message = err.message || 'Error al enviar el mensaje. Reintentá en unos segundos.';
+            const message = err.message || 'Error al enviar el mensaje.';
             setError(message);
         } finally {
             setLoading(false);
         }
     };
+
+    if (success) {
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+                <div className="bg-white rounded-[32px] p-8 flex flex-col items-center justify-center gap-4 shadow-2xl animate-in zoom-in-95 max-w-sm w-full">
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-2">
+                        <Send size={32} />
+                    </div>
+                    <h3 className="text-xl font-black text-slate-900 text-center">¡Mensaje Enviado!</h3>
+                    <p className="text-slate-500 text-center text-sm font-medium">El prestador te responderá pronto.</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
@@ -105,7 +155,7 @@ export default function MessageModal({ serviceId, sellerId, serviceTitle, isOpen
                             autoFocus
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
-                            placeholder="Ej: Hola, me gustaría saber si el presupuesto incluye materiales..."
+                            placeholder="Escribí tu consulta aquí..."
                             className="w-full h-40 p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-indigo-500 focus:ring-0 transition-all outline-none resize-none text-slate-700 font-medium"
                             required
                         />
@@ -134,7 +184,7 @@ export default function MessageModal({ serviceId, sellerId, serviceTitle, isOpen
                                 <Loader2 size={18} className="animate-spin" />
                             ) : (
                                 <>
-                                    <span>Enviar pregunta</span>
+                                    <span>Enviar</span>
                                     <Send size={18} />
                                 </>
                             )}

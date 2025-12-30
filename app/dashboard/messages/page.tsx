@@ -320,15 +320,6 @@ export default function MessagesPage() {
                                 >
                                     <CheckCheck size={20} />
                                 </button>
-                                <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors">
-                                    <Phone size={20} />
-                                </button>
-                                <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors">
-                                    <Video size={20} />
-                                </button>
-                                <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors">
-                                    <MoreVertical size={20} />
-                                </button>
                             </div>
                         </div>
 

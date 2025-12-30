@@ -8,9 +8,7 @@ import { es } from 'date-fns/locale';
 
 export default function AdminVerifications() {
     const supabase = createClient();
-    const [requests, setRequests] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [processingId, setProcessingId] = useState<string | null>(null);
+    const [debug, setDebug] = useState<any>(null);
 
     useEffect(() => {
         fetchRequests();
@@ -20,7 +18,7 @@ export default function AdminVerifications() {
         setLoading(true);
         try {
             // Fetch pending requests with user profile data
-            const { data, error } = await supabase
+            const res = await supabase
                 .from('verification_requests')
                 .select(`
                     *,
@@ -29,22 +27,39 @@ export default function AdminVerifications() {
                 .eq('status', 'pending')
                 .order('created_at', { ascending: false });
 
+            const { data, error } = res;
+
+            // Debug info
+            setDebug({
+                fetch_count: data?.length,
+                error: error,
+                first_row: data?.[0],
+                raw_data: data
+            });
+
             if (error) throw error;
+            if (!data) return;
 
             // Generate signed URLs for private images
             const requestsWithUrls = await Promise.all(data.map(async (req) => {
-                const signedDocs = await Promise.all(req.document_urls.map(async (path: string) => {
-                    const { data } = await supabase.storage
-                        .from('verification-docs')
-                        .createSignedUrl(path, 3600); // 1 hour link
-                    return data?.signedUrl || null;
-                }));
-                return { ...req, signedDocs };
+                try {
+                    const signedDocs = await Promise.all((req.document_urls || []).map(async (path: string) => {
+                        const { data } = await supabase.storage
+                            .from('verification-docs')
+                            .createSignedUrl(path, 3600); // 1 hour link
+                        return data?.signedUrl || null;
+                    }));
+                    return { ...req, signedDocs };
+                } catch (err) {
+                    console.error('Error signing docs for req', req.id, err);
+                    return { ...req, signedDocs: [], active_error: 'Error signing docs' };
+                }
             }));
 
             setRequests(requestsWithUrls);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching requests:', error);
+            setDebug(prev => ({ ...prev, catch_error: error.message }));
         } finally {
             setLoading(false);
         }
@@ -180,7 +195,15 @@ export default function AdminVerifications() {
                         </div>
                     ))}
                 </div>
-            )}
-        </div>
+                </div>
+    )
+}
+
+{/* Debug Block */ }
+<div className="mt-8 p-4 bg-slate-100 rounded text-xs font-mono overflow-auto border border-slate-300">
+    <p className="font-bold mb-2">Debug Info:</p>
+    <pre>{JSON.stringify(debug, null, 2)}</pre>
+</div>
+        </div >
     );
 }

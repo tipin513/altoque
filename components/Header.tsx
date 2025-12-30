@@ -63,7 +63,7 @@ export default async function Header() {
                             >
                                 <div className="relative">
                                     <MessageSquare size={20} className="group-hover:scale-110 transition-transform" />
-                                    <NotificationBadge />
+                                    <NotificationBadge initialUserId={user.id} />
                                 </div>
                                 <span className="text-[10px] font-black uppercase tracking-tighter mt-0.5">Mensajes</span>
                             </Link>

@@ -42,7 +42,7 @@ export default function DashboardSidebar({ profile }: DashboardSidebarProps) {
                             <div className="relative">
                                 <item.icon size={20} className="text-slate-400 group-hover:text-indigo-600 transition-colors" />
                                 {item.badge && <JobsBadge />}
-                                {item.notification && <NotificationBadge />}
+                                {item.notification && <NotificationBadge initialUserId={profile?.id} />}
                             </div>
                             <span className="text-sm font-bold group-hover:text-indigo-600 transition-colors">{item.name}</span>
                         </Link>

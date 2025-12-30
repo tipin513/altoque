@@ -3,17 +3,19 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
-export default function NotificationBadge() {
+export default function NotificationBadge({ initialUserId }: { initialUserId?: string }) {
     const supabase = createClient();
     const [unreadCount, setUnreadCount] = useState(0);
 
     useEffect(() => {
-        let userId: string | null = null;
+        let userId: string | null = initialUserId || null;
 
         async function init() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-            userId = user.id;
+            if (!userId) {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                userId = user.id;
+            }
 
             // Fetch initial unread count
             const { count } = await supabase
@@ -24,9 +26,11 @@ export default function NotificationBadge() {
 
             setUnreadCount(count || 0);
 
-            // Subscribe to new messages
+            // Subscribe to new messages with UNIQUE channel name to prevent collision
+            // between Header and Sidebar instances
+            const channelId = `unread-${userId}-${Math.random().toString(36).substring(7)}`;
             const channel = supabase
-                .channel('unread-notifications')
+                .channel(channelId)
                 .on('postgres_changes', {
                     event: 'INSERT',
                     schema: 'public',
@@ -42,7 +46,7 @@ export default function NotificationBadge() {
                     schema: 'public',
                     table: 'messages'
                 }, () => {
-                    // Re-fetch when ANY message is updated (e.g. marked as read)
+                    // Re-fetch when ANY message is updated
                     if (userId) refreshCount(userId);
                 })
                 .subscribe();
@@ -62,7 +66,7 @@ export default function NotificationBadge() {
         }
 
         init();
-    }, []);
+    }, [initialUserId]);
 
     if (unreadCount === 0) return null;
 

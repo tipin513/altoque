@@ -113,13 +113,55 @@ export default function AdminUsers() {
                                     </div>
                                 </td>
                                 <td className="p-4 text-right">
-                                    <button
-                                        onClick={() => toggleAdmin(user.id, user.role)}
-                                        className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-indigo-600 transition-colors"
-                                        title={user.role === 'admin' ? "Quitar Admin" : "Hacer Admin"}
-                                    >
-                                        {user.role === 'admin' ? <ShieldOff size={18} /> : <Shield size={18} />}
-                                    </button>
+                                    <div className="flex justify-end gap-2">
+                                        <button
+                                            onClick={async () => {
+                                                const { data: { user: currentUser } } = await supabase.auth.getUser();
+                                                if (!currentUser) return;
+
+                                                // Check for existing conversation
+                                                const { data: existing } = await supabase
+                                                    .from('conversations')
+                                                    .select('id')
+                                                    .or(`and(participant1_id.eq.${currentUser.id},participant2_id.eq.${user.id}),and(participant1_id.eq.${user.id},participant2_id.eq.${currentUser.id})`)
+                                                    .single();
+
+                                                if (existing) {
+                                                    router.push(`/dashboard/messages?chat=${existing.id}`);
+                                                } else {
+                                                    // Create new support conversation
+                                                    const [p1, p2] = [currentUser.id, user.id].sort();
+                                                    const { data: newConv } = await supabase
+                                                        .from('conversations')
+                                                        .insert({ participant1_id: p1, participant2_id: p2 })
+                                                        .select()
+                                                        .single();
+
+                                                    if (newConv) {
+                                                        // Send welcome msg
+                                                        await supabase.from('messages').insert({
+                                                            conversation_id: newConv.id,
+                                                            sender_id: currentUser.id,
+                                                            content: `Hola ${user.full_name}, te escribo desde el soporte de Altoque.`
+                                                        });
+                                                        router.push(`/dashboard/messages?chat=${newConv.id}`);
+                                                    }
+                                                }
+                                            }}
+                                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                            title="Enviar mensaje"
+                                        >
+                                            <Mail size={18} />
+                                        </button>
+
+                                        <button
+                                            onClick={() => toggleAdmin(user.id, user.role)}
+                                            className={`p-2 hover:bg-slate-100 rounded-lg transition-colors ${user.role === 'admin' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-400 hover:text-indigo-600'}`}
+                                            title={user.role === 'admin' ? "Quitar Admin" : "Hacer Admin"}
+                                        >
+                                            {user.role === 'admin' ? <ShieldOff size={18} /> : <Shield size={18} />}
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

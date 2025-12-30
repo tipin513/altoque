@@ -17,31 +17,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         checkAdmin();
     }, []);
 
+    const [debug, setDebug] = useState<any>(null);
+
     const checkAdmin = async () => {
         try {
             const { data: { user } } = await supabase.auth.getUser();
 
             if (!user) {
-                router.push('/login');
+                setDebug({ error: 'No user found' });
+                // router.push('/login');
                 return;
             }
 
             // Check role in profiles
-            const { data: profile } = await supabase
+            const { data: profile, error } = await supabase
                 .from('profiles')
                 .select('role')
                 .eq('id', user.id)
                 .single();
 
             if (profile?.role !== 'admin') {
-                router.push('/dashboard'); // Kick out if not admin
+                setDebug({ user_id: user.id, role_found: profile?.role, error: error?.message, full_profile_error: error });
+                // router.push('/dashboard'); // Kick out if not admin
                 return;
             }
 
             setIsAdmin(true);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error checking admin:', error);
-            router.push('/');
+            setDebug({ error: error.message });
         } finally {
             setLoading(false);
         }
@@ -60,7 +64,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         );
     }
 
-    if (!isAdmin) return null;
+    if (!isAdmin) {
+        return (
+            <div className="p-12 text-slate-800 bg-amber-50 min-h-screen">
+                <h1 className="text-2xl font-bold mb-4">🔒 Modo Depuración de Admin</h1>
+                <p className="mb-2">El sistema detectó que NO tenés permisos, pero deshabilité la redirección para ver por qué.</p>
+
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 font-mono text-sm overflow-auto">
+                    <pre>{JSON.stringify(debug, null, 2)}</pre>
+                </div>
+
+                <div className="mt-6 flex gap-4">
+                    <button onClick={() => window.location.reload()} className="bg-slate-900 text-white px-4 py-2 rounded-lg">
+                        Recargar Página
+                    </button>
+                    <Link href="/dashboard" className="text-indigo-600 underline px-4 py-2">
+                        Volver al Dashboard
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     const navItems = [
         { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -88,8 +112,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${isActive
-                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50'
-                                        : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50'
+                                    : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                                     }`}
                             >
                                 <item.icon size={20} />

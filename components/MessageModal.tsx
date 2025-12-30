@@ -86,7 +86,7 @@ export default function MessageModal({ serviceId, sellerId, serviceTitle, isOpen
                             <MessageSquare size={20} />
                         </div>
                         <div>
-                            <h3 className="font-black text-lg leading-tight">Enviar Mensaje Patrañas</h3>
+                            <h3 className="font-black text-lg leading-tight">Enviar Mensaje</h3>
                             <p className="text-xs text-indigo-100 font-medium line-clamp-1">{serviceTitle}</p>
                         </div>
                     </div>

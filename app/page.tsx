@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Wrench, PaintBucket, Droplets, Hammer, Zap, Monitor, Lightbulb, ShieldCheck,
   Clock, ChevronRight, Star, ArrowRight, CheckCircle2, MapPin, HardHat, CarFront, Truck
@@ -65,8 +66,14 @@ export default async function Home() {
               <div className="flex items-center gap-4 pt-4">
                 <div className="flex -space-x-3">
                   {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
-                      <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="User" />
+                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden relative">
+                      <Image
+                        src={`https://i.pravatar.cc/100?img=${i + 10}`}
+                        alt="User"
+                        fill
+                        className="object-cover"
+                        sizes="40px"
+                      />
                     </div>
                   ))}
                 </div>
@@ -83,10 +90,13 @@ export default async function Home() {
             <div className="lg:w-1/2 relative group">
               <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-[40px] blur-2xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
               <div className="relative aspect-[4/3] rounded-[32px] overflow-hidden shadow-2xl border-8 border-white bg-slate-100">
-                <img
+                <Image
                   src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=2069&auto=format&fit=crop"
                   alt="Servicios profesionales"
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority
                 />
 
                 {/* Floating Card 1 */}
@@ -103,9 +113,15 @@ export default async function Home() {
                 {/* Floating Card 2 */}
                 <div className="absolute bottom-8 left-8 bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-xl border border-white/50 flex items-center gap-3 shadow-indigo-500/10">
                   <div className="flex -space-x-2">
-                    <div className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white overflow-hidden"><img src="https://i.pravatar.cc/100?img=33" /></div>
-                    <div className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white overflow-hidden"><img src="https://i.pravatar.cc/100?img=12" /></div>
-                    <div className="w-8 h-8 rounded-full bg-indigo-600 border-2 border-white flex items-center justify-center text-white text-[10px] font-bold">+12</div>
+                    <div className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white overflow-hidden relative">
+                      <Image src="https://i.pravatar.cc/100?img=33" alt="User" fill className="object-cover" sizes="32px" />
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white overflow-hidden relative">
+                      <Image src="https://i.pravatar.cc/100?img=12" alt="User" fill className="object-cover" sizes="32px" />
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-indigo-600 border-2 border-white flex items-center justify-center text-white text-[10px] font-bold z-10 relative">
+                      +12
+                    </div>
                   </div>
                   <div>
                     <p className="text-xs font-bold text-slate-900">Presupuestos recibidos</p>
@@ -184,9 +200,11 @@ export default async function Home() {
             {services?.map((s: any) => (
               <Link key={s.id} href={`/service/${s.id}`} className="at-card group overflow-hidden border-none flex flex-col h-full bg-white">
                 <div className="aspect-[4/3] bg-slate-100 overflow-hidden relative">
-                  <img
+                  <Image
                     src={s.service_images?.[0]?.image_url || 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=400&auto=format&fit=crop'}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
                     alt={s.title}
                   />
                   <div className="absolute top-4 left-4">

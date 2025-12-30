@@ -25,7 +25,7 @@ export default function DashboardSidebar({ profile }: DashboardSidebarProps) {
     ];
 
     return (
-        <aside className="w-72 bg-white border-r border-slate-100 min-h-screen sticky top-0 hidden lg:block">
+        <aside className="w-72 bg-white border-r border-slate-100 h-full overflow-y-auto hidden lg:block">
             <div className="p-8">
                 <div className="mb-8">
                     <h2 className="text-2xl font-black text-slate-900">Dashboard</h2>

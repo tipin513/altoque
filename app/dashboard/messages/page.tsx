@@ -193,7 +193,7 @@ export default function MessagesPage() {
     if (loading) return <div className="p-12 text-center text-slate-500">Cargando chats...</div>;
 
     return (
-        <div className="h-[calc(100vh-120px)] bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden flex">
+        <div className="flex-1 h-full bg-white md:rounded-[32px] md:border md:border-slate-100 shadow-sm overflow-hidden flex flex-col md:flex-row">
             {/* Sidebar (List) */}
             <div className={`w-full md:w-80 border-r border-slate-100 flex flex-col ${activeConvId ? 'hidden md:flex' : 'flex'}`}>
                 <div className="p-6 border-b border-slate-50">

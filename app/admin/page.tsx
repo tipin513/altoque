@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Users, ShieldCheck, List, Activity, UserCheck } from 'lucide-react';
+import { Users, ShieldCheck, List, Activity, UserCheck, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminDashboard() {

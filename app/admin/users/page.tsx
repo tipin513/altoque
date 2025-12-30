@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Search, MoreVertical, Shield, ShieldOff, Mail } from 'lucide-react';
-
 import { useRouter } from 'next/navigation';
 
 export default function AdminUsers() {
@@ -119,19 +118,24 @@ export default function AdminUsers() {
                                                 const { data: { user: currentUser } } = await supabase.auth.getUser();
                                                 if (!currentUser) return;
 
-                                                // Check for existing conversation
-                                                const { data: existing } = await supabase
+                                                // Simplified approach: Fetch all conversations involving current user, then find the correct one.
+                                                // This avoids complex OR syntax errors in the API call.
+                                                const { data: myConversations } = await supabase
                                                     .from('conversations')
-                                                    .select('id')
-                                                    .or(`and(participant1_id.eq.${currentUser.id},participant2_id.eq.${user.id}),and(participant1_id.eq.${user.id},participant2_id.eq.${currentUser.id})`)
-                                                    .single();
+                                                    .select('*')
+                                                    .or(`participant1_id.eq.${currentUser.id},participant2_id.eq.${currentUser.id}`);
+
+                                                const existing = myConversations?.find(c =>
+                                                    (c.participant1_id === user.id || c.participant2_id === user.id)
+                                                );
 
                                                 if (existing) {
                                                     router.push(`/dashboard/messages?chat=${existing.id}`);
                                                 } else {
                                                     // Create new support conversation
                                                     const [p1, p2] = [currentUser.id, user.id].sort();
-                                                    const { data: newConv } = await supabase
+
+                                                    const { data: newConv, error: createError } = await supabase
                                                         .from('conversations')
                                                         .insert({ participant1_id: p1, participant2_id: p2 })
                                                         .select()
@@ -145,10 +149,15 @@ export default function AdminUsers() {
                                                             content: `Hola ${user.full_name}, te escribo desde el soporte de Altoque.`
                                                         });
                                                         router.push(`/dashboard/messages?chat=${newConv.id}`);
+                                                    } else {
+                                                        console.error('Error creating conversation:', createError);
+                                                        // If error is duplicate key, it means it existed but we missed it?
+                                                        // Assuming we caught most cases with the .find() above.
+                                                        alert('Hubo un error al iniciar el chat. Por favor intente de nuevo.');
                                                     }
                                                 }
                                             }}
-                                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-colors"
                                             title="Enviar mensaje"
                                         >
                                             <Mail size={18} />
@@ -156,10 +165,13 @@ export default function AdminUsers() {
 
                                         <button
                                             onClick={() => toggleAdmin(user.id, user.role)}
-                                            className={`p-2 hover:bg-slate-100 rounded-lg transition-colors ${user.role === 'admin' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-400 hover:text-indigo-600'}`}
+                                            className={`p-2 rounded-lg transition-colors ${user.role === 'admin'
+                                                ? 'text-indigo-600 bg-indigo-50 hover:bg-indigo-100'
+                                                : 'text-slate-400 hover:text-indigo-600 hover:bg-slate-100'
+                                                }`}
                                             title={user.role === 'admin' ? "Quitar Admin" : "Hacer Admin"}
                                         >
-                                            {user.role === 'admin' ? <ShieldOff size={18} /> : <Shield size={18} />}
+                                            {user.role === 'admin' ? <Shield size={18} /> : <ShieldOff size={18} />}
                                         </button>
                                     </div>
                                 </td>

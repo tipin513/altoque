@@ -67,8 +67,8 @@ export default function NotificationBadge() {
     if (unreadCount === 0) return null;
 
     return (
-        <span className="absolute -top-1 -right-1 w-5 h-5 bg-indigo-600 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-sm border-2 border-white animate-in zoom-in duration-300">
-            {unreadCount > 9 ? '9+' : unreadCount}
+        <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm border border-white animate-in zoom-in duration-300 pointer-events-none">
+            {unreadCount > 99 ? '99+' : unreadCount}
         </span>
     );
 }

@@ -61,8 +61,10 @@ export default async function Header() {
                                 className="flex flex-col items-center justify-center p-2 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-white hover:shadow-sm transition-all group relative"
                                 title="Mensajes"
                             >
-                                <MessageSquare size={20} className="group-hover:scale-110 transition-transform" />
-                                <NotificationBadge />
+                                <div className="relative">
+                                    <MessageSquare size={20} className="group-hover:scale-110 transition-transform" />
+                                    <NotificationBadge />
+                                </div>
                                 <span className="text-[10px] font-black uppercase tracking-tighter mt-0.5">Mensajes</span>
                             </Link>
 

@@ -11,7 +11,6 @@ export default function AdminVerifications() {
     const [requests, setRequests] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
-    const [debug, setDebug] = useState<any>(null);
 
     useEffect(() => {
         fetchRequests();
@@ -31,14 +30,6 @@ export default function AdminVerifications() {
                 .order('created_at', { ascending: false });
 
             const { data, error } = res;
-
-            // Debug info
-            setDebug({
-                fetch_count: data?.length,
-                error: error,
-                first_row: data?.[0],
-                raw_data: data
-            });
 
             if (error) throw error;
             if (!data) return;
@@ -60,9 +51,8 @@ export default function AdminVerifications() {
             }));
 
             setRequests(requestsWithUrls);
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error fetching requests:', error);
-            setDebug((prev: any) => ({ ...prev, catch_error: error.message }));
         } finally {
             setLoading(false);
         }
@@ -199,12 +189,6 @@ export default function AdminVerifications() {
                     ))}
                 </div>
             )}
-
-            {/* Debug Block */}
-            <div className="mt-8 p-4 bg-slate-100 rounded text-xs font-mono overflow-auto border border-slate-300">
-                <p className="font-bold mb-2">Debug Info:</p>
-                <pre>{JSON.stringify(debug, null, 2)}</pre>
-            </div>
-        </div >
+        </div>
     );
 }

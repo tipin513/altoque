@@ -4,8 +4,11 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Search, MoreVertical, Shield, ShieldOff, Mail } from 'lucide-react';
 
+import { useRouter } from 'next/navigation';
+
 export default function AdminUsers() {
     const supabase = createClient();
+    const router = useRouter();
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -96,7 +99,7 @@ export default function AdminUsers() {
                                 </td>
                                 <td className="p-4">
                                     <span className={`px-2 py-0.5 rounded-md text-xs font-bold uppercase ${user.role === 'admin' ? 'bg-indigo-100 text-indigo-700' :
-                                            user.role === 'prestador' ? 'bg-slate-100 text-slate-700' : 'text-slate-500'
+                                        user.role === 'prestador' ? 'bg-slate-100 text-slate-700' : 'text-slate-500'
                                         }`}>
                                         {user.role}
                                     </span>
